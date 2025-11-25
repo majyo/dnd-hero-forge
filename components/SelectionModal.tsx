@@ -1,10 +1,12 @@
+
 import React from 'react';
 import { X, Check } from 'lucide-react';
+import { SelectionOption } from '../constants';
 
 interface SelectionModalProps {
   title: string;
   description?: string;
-  options: string[];
+  options: SelectionOption[];
   selected: string;
   onSelect: (value: string) => void;
   onClose: () => void;
@@ -45,18 +47,18 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-dnd-dark/50">
+        <div className="flex-1 overflow-y-auto p-6 bg-dnd-dark/50 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {options.map((opt) => {
-              const isSelected = selected === opt;
+              const isSelected = selected === opt.name;
               return (
                 <button
-                  key={opt}
+                  key={opt.name}
                   onClick={() => {
-                     onSelect(opt);
+                     onSelect(opt.name);
                      onClose();
                   }}
-                  className={`text-left p-6 rounded-lg border transition-all relative group flex flex-col items-center justify-center min-h-[160px] ${
+                  className={`text-left p-6 rounded-lg border transition-all relative group flex flex-col h-full ${
                     isSelected
                       ? 'bg-dnd-dark border-dnd-gold shadow-[0_0_15px_rgba(201,173,106,0.15)]'
                       : 'bg-dnd-slate border-white/10 hover:border-dnd-gold hover:shadow-lg hover:shadow-dnd-gold/10 hover:-translate-y-1'
@@ -68,11 +70,17 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
                          </div>
                     )}
 
-                    <div className="text-center">
-                        <h3 className={`font-serif font-bold text-2xl mb-2 ${isSelected ? 'text-dnd-gold' : 'text-gray-200 group-hover:text-dnd-gold'}`}>
-                            {opt}
-                        </h3>
-                         <div className={`h-1 w-12 mx-auto rounded-full ${isSelected ? 'bg-dnd-gold' : 'bg-white/10 group-hover:bg-dnd-gold/50'}`} />
+                    <div className="flex flex-col h-full">
+                        <div className="mb-3 text-center w-full">
+                           <h3 className={`font-serif font-bold text-2xl mb-2 ${isSelected ? 'text-dnd-gold' : 'text-gray-200 group-hover:text-dnd-gold'}`}>
+                              {opt.name}
+                           </h3>
+                           <div className={`h-1 w-12 mx-auto rounded-full transition-colors ${isSelected ? 'bg-dnd-gold' : 'bg-white/10 group-hover:bg-dnd-gold/50'}`} />
+                        </div>
+                        
+                        <p className="text-sm text-gray-400 text-center leading-relaxed group-hover:text-gray-300 transition-colors">
+                           {opt.description}
+                        </p>
                     </div>
                 </button>
               );

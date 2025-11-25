@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell } from '../types';
-import { SPECIES_LIST, CLASS_LIST, BACKGROUND_LIST, ALIGNMENTS, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
+import { SPECIES_DATA, CLASS_LIST, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
 import { StatBox } from './StatBox';
 import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
@@ -617,7 +617,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
         <SelectionModal 
            title="Select Species"
            description="Choose your character's species, determining their innate traits and ancestry."
-           options={SPECIES_LIST}
+           options={SPECIES_DATA}
            selected={character.species}
            onSelect={(val) => updateField('species', val)}
            onClose={() => setActiveModal(null)}
@@ -628,7 +628,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
         <SelectionModal 
            title="Select Background"
            description="Your background reveals where you came from and how you became an adventurer."
-           options={BACKGROUND_LIST}
+           options={BACKGROUND_DATA}
            selected={character.background}
            onSelect={(val) => updateField('background', val)}
            onClose={() => setActiveModal(null)}
@@ -639,7 +639,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
         <SelectionModal 
            title="Select Alignment"
            description="Alignment matches your character's moral compass and view of the world."
-           options={ALIGNMENTS}
+           options={ALIGNMENT_DATA}
            selected={character.alignment}
            onSelect={(val) => updateField('alignment', val)}
            onClose={() => setActiveModal(null)}

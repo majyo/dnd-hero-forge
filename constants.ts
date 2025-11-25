@@ -1,21 +1,25 @@
 
-
-
-
 // D&D 2024 Core Options (Simplified list)
 
-export const SPECIES_LIST = [
-  "Human",
-  "Aasimar",
-  "Dragonborn",
-  "Dwarf",
-  "Elf",
-  "Gnome",
-  "Goliath",
-  "Halfling",
-  "Orc",
-  "Tiefling"
+export interface SelectionOption {
+  name: string;
+  description: string;
+}
+
+export const SPECIES_DATA: SelectionOption[] = [
+  { name: "Human", description: "Versatile and resilient, humans thrive in almost any environment, known for their adaptability and ambition." },
+  { name: "Aasimar", description: "Carrying the spark of the Upper Planes, Aasimar are often champions of good, guided by celestial powers." },
+  { name: "Dragonborn", description: "Born of dragons, these proud warriors possess breath weapons and a strong sense of clan honor." },
+  { name: "Dwarf", description: "Stout and hardy, dwarves are masters of stone and metal, possessing great endurance and martial skill." },
+  { name: "Elf", description: "Magical and long-lived, elves possess keen senses and a deep connection to nature or the fey." },
+  { name: "Gnome", description: "Small, inquisitive, and energetic, gnomes delight in discovery, invention, and subtle magic." },
+  { name: "Goliath", description: "Towering and powerful, goliaths dwell in high mountain peaks, valuing strength and self-sufficiency." },
+  { name: "Halfling", description: "Small and nimble, halflings are known for their luck, bravery, and love of life's simple comforts." },
+  { name: "Orc", description: "Strong and relentless, orcs are fierce warriors who value endurance and action over words." },
+  { name: "Tiefling", description: "Bearing the mark of an infernal heritage, tieflings possess innate magic and often face prejudice with defiance." }
 ];
+
+export const SPECIES_LIST = SPECIES_DATA.map(s => s.name);
 
 export const CLASS_LIST = [
   "Barbarian",
@@ -47,30 +51,40 @@ export const CLASS_HIT_DICE: Record<string, number> = {
   "Wizard": 6
 };
 
-export const BACKGROUND_LIST = [
-  "Acolyte",
-  "Artisan",
-  "Charlatan",
-  "Criminal",
-  "Entertainer",
-  "Farmer",
-  "Guard",
-  "Guide",
-  "Hermit",
-  "Merchant",
-  "Noble",
-  "Sage",
-  "Sailor",
-  "Scribe",
-  "Soldier",
-  "Wayfarer"
+export const BACKGROUND_DATA: SelectionOption[] = [
+  { name: "Acolyte", description: "You spent your formative years in a temple, performing sacred rites and studying religious lore." },
+  { name: "Artisan", description: "You are a master of a specific craft, creating items of value and beauty with your hands." },
+  { name: "Charlatan", description: "You know how to manipulate others, using deception and tricks to get what you want." },
+  { name: "Criminal", description: "You have a history of breaking the law and surviving on the wrong side of society." },
+  { name: "Entertainer", description: "You thrive in front of an audience, using your talents to captivate and inspire." },
+  { name: "Farmer", description: "You grew up working the land, developing strong roots and a connection to nature's cycles." },
+  { name: "Guard", description: "You served in a militia or city watch, trained to protect your community and enforce order." },
+  { name: "Guide", description: "You are at home in the wilderness, skilled at navigating and surviving in the wild." },
+  { name: "Hermit", description: "You lived in seclusion, seeking spiritual enlightenment or hiding from society." },
+  { name: "Merchant", description: "You know the value of things and people, making your living through trade and negotiation." },
+  { name: "Noble", description: "You were born into privilege, understanding high society and the responsibilities of power." },
+  { name: "Sage", description: "You are a scholar, having spent years studying lore, history, or the arcane arts." },
+  { name: "Sailor", description: "You are at home on the open sea, skilled in the operations of a ship and weathering storms." },
+  { name: "Scribe", description: "You are a master of the written word, recording history, laws, or arcane knowledge." },
+  { name: "Soldier", description: "You have trained in the arts of war, serving in an army or mercenary company." },
+  { name: "Wayfarer", description: "You are a wanderer, traveling from place to place and collecting stories and oddities." }
 ];
 
-export const ALIGNMENTS = [
-  "Lawful Good", "Neutral Good", "Chaotic Good",
-  "Lawful Neutral", "True Neutral", "Chaotic Neutral",
-  "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+export const BACKGROUND_LIST = BACKGROUND_DATA.map(b => b.name);
+
+export const ALIGNMENT_DATA: SelectionOption[] = [
+  { name: "Lawful Good", description: "You act as a good person is expected or required to act, upholding law and protecting the innocent." },
+  { name: "Neutral Good", description: "You do the best you can to help others according to your needs, without strong bias for or against order." },
+  { name: "Chaotic Good", description: "You act as your conscience directs, with little regard for what others expect." },
+  { name: "Lawful Neutral", description: "You act in accordance with law, tradition, or personal codes. Order is paramount." },
+  { name: "True Neutral", description: "You prefer to steer clear of moral questions and don't take sides, doing what seems best at the time." },
+  { name: "Chaotic Neutral", description: "You follow your whims, valuing your own freedom above all else." },
+  { name: "Lawful Evil", description: "You methodically take what you want within the limits of a code of tradition, loyalty, or order." },
+  { name: "Neutral Evil", description: "You do whatever you can get away with, without compassion or qualms." },
+  { name: "Chaotic Evil", description: "You act with arbitrary violence, spurred by your greed, hatred, or bloodlust." }
 ];
+
+export const ALIGNMENTS = ALIGNMENT_DATA.map(a => a.name);
 
 export const SKILL_DATA = [
   { name: 'Acrobatics', ability: 'Dexterity' },
