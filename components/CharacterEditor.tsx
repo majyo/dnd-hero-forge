@@ -1,8 +1,9 @@
 
+
 import React, { useState } from 'react';
-import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight } from 'lucide-react';
+import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight, Crown } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell } from '../types';
-import { SPECIES_DATA, CLASS_LIST, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
+import { SPECIES_DATA, CLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
 import { StatBox } from './StatBox';
 import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
@@ -11,6 +12,8 @@ interface CharacterEditorProps {
   character: Character;
   updateField: (field: keyof Character, value: any) => void;
   updateStat: (ability: Ability, value: number) => void;
+  addClassLevel: (className: string) => void;
+  removeClassLevel: (index: number) => void;
   setSkillLevel: (skillName: string, level: ProficiencyLevel) => void;
   removeFeat: (index: number) => void;
   toggleFeatureActive: (index: number) => void;
@@ -38,6 +41,8 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   character,
   updateField,
   updateStat,
+  addClassLevel,
+  removeClassLevel,
   setSkillLevel,
   removeFeat,
   toggleFeatureActive,
@@ -60,9 +65,9 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   const [newItem, setNewItem] = useState('');
   const [newSpellName, setNewSpellName] = useState('');
   const [newSpellLevel, setNewSpellLevel] = useState(0);
-  const [activeModal, setActiveModal] = useState<'species' | 'background' | 'alignment' | null>(null);
+  const [activeModal, setActiveModal] = useState<'species' | 'class' | 'background' | 'alignment' | null>(null);
 
-  const hitDie = CLASS_HIT_DICE[character.class] || 8;
+  const hitDie = CLASS_HIT_DICE[character.classHistory[0]?.className] || 8;
 
   const handleAddEquipment = () => {
     addEquipment(newItem);
@@ -143,14 +148,13 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
         {/* Left Column: Core Info & Skills */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Top Bar: Name, Level, Class */}
+          {/* Top Bar: Name Only */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
                <Shield className="w-5 h-5" /> Core Identity
              </h3>
              
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-               <div className="space-y-1 md:col-span-2">
+             <div className="space-y-1">
                  <label className="text-xs text-gray-400 uppercase font-bold">Character Name</label>
                  <div className="flex gap-2">
                     <input 
@@ -168,35 +172,6 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                     </button>
                  </div>
                </div>
-
-               <div className="space-y-1">
-                 <label className="text-xs text-gray-400 uppercase font-bold">Level</label>
-                 <input 
-                    type="number" 
-                    min="1" max="20"
-                    value={character.level}
-                    onChange={(e) => updateField('level', parseInt(e.target.value))}
-                    className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none"
-                 />
-               </div>
-
-               <div className="space-y-1 md:col-span-3">
-                 <label className="text-xs text-gray-400 uppercase font-bold">Class</label>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <select 
-                        value={character.class}
-                        onChange={(e) => updateField('class', e.target.value)}
-                        className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none appearance-none"
-                    >
-                    {CLASS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-black/20 rounded border border-white/5 text-gray-400 text-sm">
-                        <Heart className="w-3 h-3 text-dnd-red" />
-                        <span>Hit Die: <span className="text-white font-bold">d{hitDie}</span></span>
-                    </div>
-                 </div>
-               </div>
-             </div>
           </div>
 
           {/* Origin Section (Species, Background, Alignment) */}
@@ -204,6 +179,65 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
              {renderSelectionCard("Species", character.species, <Users className="w-5 h-5"/>, () => setActiveModal('species'))}
              {renderSelectionCard("Background", character.background, <Landmark className="w-5 h-5"/>, () => setActiveModal('background'))}
              {renderSelectionCard("Alignment", character.alignment, <Scale className="w-5 h-5"/>, () => setActiveModal('alignment'))}
+          </div>
+
+          {/* Class & Level Progression */}
+          <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
+             <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
+               <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
+                 <Crown className="w-5 h-5" /> Class & Level Progression
+               </h3>
+               <button 
+                 onClick={() => setActiveModal('class')}
+                 className="bg-dnd-gold text-dnd-dark font-bold px-4 py-1.5 rounded hover:bg-yellow-600 flex items-center gap-2 text-sm transition-colors shadow-lg shadow-dnd-gold/10"
+               >
+                 <Plus className="w-4 h-4" /> Add Level
+               </button>
+             </div>
+
+             <div className="grid grid-cols-1 gap-4">
+               {character.classHistory.length === 0 && (
+                 <div className="text-center py-8 border border-dashed border-white/10 rounded-lg bg-black/20">
+                   <p className="text-gray-500 italic">No levels added yet.</p>
+                   <p className="text-xs text-gray-600 mt-1">Click "Add Level" to choose a class.</p>
+                 </div>
+               )}
+               {character.classHistory.map((levelEntry, idx) => (
+                 <div key={levelEntry.id} className="p-4 rounded-lg border bg-dnd-dark border-dnd-gold/20 flex flex-col gap-3 transition-all hover:border-dnd-gold">
+                   <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-full bg-dnd-slate border border-white/10 flex items-center justify-center font-serif font-bold text-dnd-gold shadow-inner">
+                           {idx + 1}
+                         </div>
+                         <div>
+                            <h4 className="font-bold text-base text-gray-200">{levelEntry.className}</h4>
+                            <div className="flex gap-2">
+                                <span className="text-[10px] text-cyan-400 uppercase border border-cyan-900 bg-cyan-950/30 px-1.5 rounded tracking-wider">
+                                    Hit Die: d{levelEntry.hitDie}
+                                </span>
+                                {idx === 0 && <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">Primary</span>}
+                            </div>
+                         </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => removeClassLevel(idx)}
+                        className="p-2 text-gray-600 hover:text-red-400 hover:bg-white/5 rounded transition-all"
+                        title="Remove Level"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                   </div>
+                 </div>
+               ))}
+               {character.classHistory.length > 0 && (
+                   <div className="flex justify-end pt-2">
+                       <div className="text-xs text-gray-500 uppercase font-bold">
+                           Total Level: <span className="text-white text-lg ml-1">{character.classHistory.length}</span>
+                       </div>
+                   </div>
+               )}
+             </div>
           </div>
 
           {/* Skills Section */}
@@ -622,6 +656,17 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
            onSelect={(val) => updateField('species', val)}
            onClose={() => setActiveModal(null)}
            icon={<Users className="w-6 h-6" />}
+        />
+      )}
+      {activeModal === 'class' && (
+        <SelectionModal 
+           title="Select Class for Level"
+           description="Choose the class for this character level."
+           options={CLASS_DATA}
+           selected={""} 
+           onSelect={(val) => addClassLevel(val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Crown className="w-6 h-6" />}
         />
       )}
       {activeModal === 'background' && (

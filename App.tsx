@@ -1,9 +1,10 @@
 
+
 import React, { useState } from 'react';
 import { AICharacterSuggestion, ProficiencyLevel } from './types';
-import { SKILL_DATA } from './constants';
+import { SKILL_DATA, CLASS_HIT_DICE } from './constants';
 import { generateCharacterFromPrompt, generateBackstory, suggestName } from './services/geminiService';
-import { calculateMaxHP, calculateAC } from './utils/characterUtils';
+import { calculateMaxHP, calculateAC, formatClassString } from './utils/characterUtils';
 import { useCharacter } from './hooks/useCharacter';
 import { Header } from './components/Header';
 import { FeatModal } from './components/FeatModal';
@@ -16,6 +17,8 @@ const App: React.FC = () => {
     setCharacter, 
     updateStat, 
     updateField, 
+    addClassLevel,
+    removeClassLevel,
     setSkillLevel, 
     addFeat, 
     removeFeat, 
@@ -56,15 +59,26 @@ const App: React.FC = () => {
         });
       }
 
+      // Generate Class History based on suggested level
+      // Since AI returns a single class string and a level, we populate the history
+      const generatedHistory = Array.from({ length: suggestion.level || 1 }).map(() => ({
+        id: crypto.randomUUID(),
+        className: suggestion.class,
+        hitDie: CLASS_HIT_DICE[suggestion.class] || 8
+      }));
+      
+      const classStr = formatClassString(generatedHistory);
+
       // Calculate derived stats
-      const hp = calculateMaxHP(suggestion.class, 1, suggestion.stats.Constitution, suggestion.feats || []);
+      const hp = calculateMaxHP(generatedHistory, suggestion.stats.Constitution, suggestion.feats || []);
       const ac = calculateAC(suggestion.class, suggestion.stats.Dexterity, suggestion.stats.Constitution, suggestion.stats.Wisdom);
 
       setCharacter(prev => ({
         ...prev,
         name: suggestion.name,
         species: suggestion.species,
-        class: suggestion.class,
+        class: classStr,
+        classHistory: generatedHistory,
         background: suggestion.background,
         stats: suggestion.stats,
         skills: skillsMap,
@@ -72,7 +86,8 @@ const App: React.FC = () => {
         hitPoints: hp,
         currentHitPoints: hp,
         armorClass: ac,
-        currentHitDice: 1, // Default to level 1
+        level: suggestion.level || 1,
+        currentHitDice: suggestion.level || 1,
         backstory: suggestion.shortBackstory,
         // Reset spells/slots on quick build for now or we could try to generate them
         spellcastingAbility: 'None',
@@ -113,6 +128,8 @@ const App: React.FC = () => {
             character={character}
             updateField={updateField}
             updateStat={updateStat}
+            addClassLevel={addClassLevel}
+            removeClassLevel={removeClassLevel}
             setSkillLevel={setSkillLevel}
             removeFeat={removeFeat}
             toggleFeatureActive={toggleFeatureActive}

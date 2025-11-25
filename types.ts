@@ -1,4 +1,5 @@
 
+
 export enum Ability {
   STR = 'Strength',
   DEX = 'Dexterity',
@@ -36,12 +37,19 @@ export interface Spell {
   prepared: boolean;
 }
 
+export interface ClassLevelEntry {
+  id: string;
+  className: string;
+  hitDie: number;
+}
+
 export interface Character {
   name: string;
   species: string; // Renamed from Race in 2024 rules
-  class: string;
+  class: string; // Display string (e.g. "Fighter 1 / Rogue 1")
+  classHistory: ClassLevelEntry[]; // Detailed progression
   subclass?: string;
-  level: number;
+  level: number; // Total level
   background: string;
   alignment: string;
   stats: AbilityScores;
@@ -63,7 +71,10 @@ export interface Character {
 export const INITIAL_CHARACTER: Character = {
   name: '',
   species: 'Human',
-  class: 'Fighter',
+  class: 'Fighter 1',
+  classHistory: [
+    { id: 'init_1', className: 'Fighter', hitDie: 10 }
+  ],
   level: 1,
   background: 'Guard',
   alignment: 'Neutral Good',
@@ -94,6 +105,7 @@ export interface AICharacterSuggestion {
   name: string;
   species: string;
   class: string;
+  level: number;
   background: string;
   stats: AbilityScores;
   skills: string[]; // AI still returns simple list, we convert to proficient level

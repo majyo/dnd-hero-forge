@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Ability, AICharacterSuggestion, Character } from "../types";
 
@@ -15,6 +16,7 @@ const characterSchema: Schema = {
     name: { type: Type.STRING },
     species: { type: Type.STRING },
     class: { type: Type.STRING },
+    level: { type: Type.INTEGER, description: "Suggested character level, typically 1 unless prompt specifies otherwise." },
     background: { type: Type.STRING },
     stats: {
       type: Type.OBJECT,

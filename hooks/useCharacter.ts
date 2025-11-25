@@ -1,7 +1,9 @@
 
+
 import { useState } from 'react';
 import { Character, INITIAL_CHARACTER, Ability, ProficiencyLevel, Feat, Spell } from '../types';
-import { calculateMaxHP, calculateAC } from '../utils/characterUtils';
+import { calculateMaxHP, calculateAC, formatClassString } from '../utils/characterUtils';
+import { CLASS_HIT_DICE } from '../constants';
 
 export const useCharacter = () => {
   const [character, setCharacter] = useState<Character>(INITIAL_CHARACTER);
@@ -15,6 +17,39 @@ export const useCharacter = () => {
 
   const updateField = (field: keyof Character, value: any) => {
     setCharacter(prev => ({ ...prev, [field]: value }));
+  };
+
+  const addClassLevel = (className: string) => {
+    const hitDie = CLASS_HIT_DICE[className] || 8;
+    const newEntry = {
+      id: crypto.randomUUID(),
+      className,
+      hitDie
+    };
+
+    setCharacter(prev => {
+      const newHistory = [...prev.classHistory, newEntry];
+      const newClassStr = formatClassString(newHistory);
+      return {
+        ...prev,
+        classHistory: newHistory,
+        level: newHistory.length,
+        class: newClassStr
+      };
+    });
+  };
+
+  const removeClassLevel = (index: number) => {
+    setCharacter(prev => {
+      const newHistory = prev.classHistory.filter((_, i) => i !== index);
+      const newClassStr = formatClassString(newHistory);
+      return {
+        ...prev,
+        classHistory: newHistory,
+        level: newHistory.length,
+        class: newClassStr
+      };
+    });
   };
 
   const setSkillLevel = (skillName: string, level: ProficiencyLevel) => {
@@ -72,8 +107,10 @@ export const useCharacter = () => {
   };
 
   const autoCalculateVitals = () => {
-    const newHP = calculateMaxHP(character.class, character.level, character.stats.Constitution, character.feats);
-    const newAC = calculateAC(character.class, character.stats.Dexterity, character.stats.Constitution, character.stats.Wisdom);
+    const newHP = calculateMaxHP(character.classHistory, character.stats.Constitution, character.feats);
+    // Use first class in history as primary for AC calculation (e.g. Barbarian Unarmored Defense)
+    const primaryClass = character.classHistory.length > 0 ? character.classHistory[0].className : 'Commoner';
+    const newAC = calculateAC(primaryClass, character.stats.Dexterity, character.stats.Constitution, character.stats.Wisdom);
     
     setCharacter(prev => ({
       ...prev,
@@ -117,6 +154,8 @@ export const useCharacter = () => {
     setCharacter,
     updateStat,
     updateField,
+    addClassLevel,
+    removeClassLevel,
     setSkillLevel,
     addFeat,
     removeFeat,

@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Download, Flame, Shield, Activity, Heart } from 'lucide-react';
 import { Character, Ability } from '../types';
@@ -11,7 +12,7 @@ interface CharacterSheetProps {
 
 export const CharacterSheet: React.FC<CharacterSheetProps> = ({ character }) => {
   const proficiencyBonus = getProficiencyBonus(character.level);
-  const hitDie = CLASS_HIT_DICE[character.class] || 8;
+  const primaryHitDie = character.classHistory.length > 0 ? character.classHistory[0].hitDie : 8;
   const isSpellcaster = character.spellcastingAbility !== 'None';
   const saveDC = calculateSpellSaveDC(character);
   const attackBonus = calculateSpellAttackBonus(character);
@@ -30,7 +31,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = ({ character }) => 
             <div className="flex flex-wrap gap-4 mt-2 text-sm font-semibold uppercase tracking-wide text-gray-700">
               <span>{character.species}</span>
               <span className="w-1 h-1 bg-dnd-red rounded-full self-center" />
-              <span>{character.class} {character.level}</span>
+              <span>{character.class}</span> 
               <span className="w-1 h-1 bg-dnd-red rounded-full self-center" />
               <span>{character.background}</span>
               <span className="w-1 h-1 bg-dnd-red rounded-full self-center" />
@@ -144,7 +145,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = ({ character }) => 
                         <div className="absolute top-0 left-0 w-full h-1 bg-dnd-gold opacity-50"></div>
                         <div className="flex justify-between items-center mb-1">
                              <span className="text-xs font-bold text-gray-400 uppercase">Hit Dice</span>
-                             <span className="text-[10px] font-bold text-gray-400 uppercase">d{hitDie}</span>
+                             {/* Display logic simplifies to primary class die for visual consistency, though technically mixed */}
+                             <span className="text-[10px] font-bold text-gray-400 uppercase">Total: {character.level}</span>
                         </div>
                         <div className="flex items-end justify-center h-10">
                              <span className="text-3xl font-serif font-bold text-gray-800">{character.currentHitDice}</span>
