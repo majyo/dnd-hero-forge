@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState } from 'react';
 import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight, Crown, Package } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell, EquipmentItem } from '../types';
@@ -598,10 +594,10 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                             </div>
                             <button 
                                 onClick={() => removeEquipment(idx)}
-                                className="text-gray-600 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-all"
+                                className="p-2 text-gray-600 hover:text-red-400 hover:bg-white/5 rounded transition-all"
                                 title="Remove Item"
                             >
-                                <X className="w-4 h-4" />
+                                <Trash2 className="w-5 h-5" />
                             </button>
                         </div>
                         {item.description && (
