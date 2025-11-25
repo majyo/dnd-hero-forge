@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark } from 'lucide-react';
+import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell } from '../types';
 import { SPECIES_LIST, CLASS_LIST, BACKGROUND_LIST, ALIGNMENTS, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
 import { StatBox } from './StatBox';
+import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
 
 interface CharacterEditorProps {
@@ -59,6 +60,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   const [newItem, setNewItem] = useState('');
   const [newSpellName, setNewSpellName] = useState('');
   const [newSpellLevel, setNewSpellLevel] = useState(0);
+  const [activeModal, setActiveModal] = useState<'species' | 'background' | 'alignment' | null>(null);
 
   const hitDie = CLASS_HIT_DICE[character.class] || 8;
 
@@ -112,28 +114,25 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
     </div>
   );
 
-  const renderSelectionGrid = (title: string, icon: React.ReactNode, options: string[], selectedValue: string, field: keyof Character) => (
-    <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
-       <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
-         {icon} {title}
-       </h3>
-       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => updateField(field, opt)}
-              className={`relative p-3 rounded-lg border text-sm font-bold transition-all text-left flex items-center justify-between group ${
-                selectedValue === opt
-                ? 'bg-dnd-dark border-dnd-gold text-dnd-gold shadow-[0_0_10px_rgba(201,173,106,0.15)]'
-                : 'bg-black/20 border-white/10 text-gray-400 hover:border-dnd-gold/50 hover:text-gray-200 hover:bg-white/5'
-              }`}
-            >
-              <span className="truncate pr-2">{opt}</span>
-              {selectedValue === opt && <Check className="w-4 h-4 text-dnd-gold shrink-0" />}
-            </button>
-          ))}
+  const renderSelectionCard = (label: string, value: string, icon: React.ReactNode, onClick: () => void) => (
+    <button 
+      onClick={onClick}
+      className="flex flex-col items-start justify-between p-5 rounded-xl border border-white/10 bg-dnd-slate/50 hover:bg-dnd-slate hover:border-dnd-gold/50 hover:shadow-lg hover:shadow-dnd-gold/5 transition-all group text-left h-full relative overflow-hidden"
+    >
+       <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity text-dnd-gold">
+         <ChevronRight className="w-5 h-5" />
        </div>
-    </div>
+       <div className="flex items-center gap-2 text-gray-400 group-hover:text-dnd-gold mb-3 transition-colors">
+          {icon}
+          <span className="text-xs uppercase font-bold tracking-wider">{label}</span>
+       </div>
+       <div className="font-serif font-bold text-2xl text-white group-hover:text-dnd-gold break-words w-full transition-colors">
+          {value}
+       </div>
+       <div className="mt-4 w-full h-1 bg-white/5 rounded-full overflow-hidden">
+          <div className="h-full bg-dnd-gold w-0 group-hover:w-full transition-all duration-500 ease-out" />
+       </div>
+    </button>
   );
 
   return (
@@ -200,14 +199,12 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
              </div>
           </div>
 
-          {/* Species Selection */}
-          {renderSelectionGrid("Species", <Users className="w-5 h-5" />, SPECIES_LIST, character.species, 'species')}
-
-          {/* Background Selection */}
-          {renderSelectionGrid("Background", <Landmark className="w-5 h-5" />, BACKGROUND_LIST, character.background, 'background')}
-
-          {/* Alignment Selection */}
-          {renderSelectionGrid("Alignment", <Scale className="w-5 h-5" />, ALIGNMENTS, character.alignment, 'alignment')}
+          {/* Origin Section (Species, Background, Alignment) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             {renderSelectionCard("Species", character.species, <Users className="w-5 h-5"/>, () => setActiveModal('species'))}
+             {renderSelectionCard("Background", character.background, <Landmark className="w-5 h-5"/>, () => setActiveModal('background'))}
+             {renderSelectionCard("Alignment", character.alignment, <Scale className="w-5 h-5"/>, () => setActiveModal('alignment'))}
+          </div>
 
           {/* Skills Section */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
@@ -615,6 +612,40 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
            </div>
         </div>
       </div>
+
+      {activeModal === 'species' && (
+        <SelectionModal 
+           title="Select Species"
+           description="Choose your character's species, determining their innate traits and ancestry."
+           options={SPECIES_LIST}
+           selected={character.species}
+           onSelect={(val) => updateField('species', val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Users className="w-6 h-6" />}
+        />
+      )}
+      {activeModal === 'background' && (
+        <SelectionModal 
+           title="Select Background"
+           description="Your background reveals where you came from and how you became an adventurer."
+           options={BACKGROUND_LIST}
+           selected={character.background}
+           onSelect={(val) => updateField('background', val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Landmark className="w-6 h-6" />}
+        />
+      )}
+      {activeModal === 'alignment' && (
+        <SelectionModal 
+           title="Select Alignment"
+           description="Alignment matches your character's moral compass and view of the world."
+           options={ALIGNMENTS}
+           selected={character.alignment}
+           onSelect={(val) => updateField('alignment', val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Scale className="w-6 h-6" />}
+        />
+      )}
     </div>
   );
 };
