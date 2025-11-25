@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
-import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight, Crown, Package } from 'lucide-react';
+import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Landmark, ChevronRight, Crown, Package, Users, Scale } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell, EquipmentItem } from '../types';
 import { SPECIES_DATA, CLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE, EXAMPLE_EQUIPMENT } from '../constants';
 import { StatBox } from './StatBox';
 import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CharacterEditorProps {
   character: Character;
@@ -62,6 +64,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   onSuggestName,
   onOpenFeatModal
 }) => {
+  const { t } = useLanguage();
   const [newItemName, setNewItemName] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('General');
   const [newItemDesc, setNewItemDesc] = useState('');
@@ -108,13 +111,13 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-3 text-indigo-300">
           <Sparkles className="w-5 h-5" />
-          <h2 className="font-serif font-bold tracking-wide text-sm uppercase">Gemini AI Quick Build</h2>
+          <h2 className="font-serif font-bold tracking-wide text-sm uppercase">{t('aiTitle')}</h2>
         </div>
         
         <div className="flex flex-col md:flex-row gap-4">
           <input 
             type="text" 
-            placeholder="e.g., 'A sneaky Halfling rogue who steals from the rich' or 'A paladin struggling with their oath'"
+            placeholder={t('aiPlaceholder')}
             className="flex-1 bg-black/40 border border-indigo-500/30 rounded-lg px-4 py-3 text-white placeholder-indigo-300/50 focus:outline-none focus:border-indigo-400 transition-colors"
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
@@ -126,11 +129,11 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
             className={`px-6 py-3 rounded-lg font-bold text-white flex items-center gap-2 transition-all shadow-lg ${isGenerating ? 'bg-gray-600 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/25'}`}
           >
             {isGenerating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-            {isGenerating ? 'Forging...' : 'Generate'}
+            {isGenerating ? t('generating') : t('generate')}
           </button>
         </div>
         <p className="text-xs text-indigo-300/60 mt-2 ml-1">
-          Powered by Google Gemini 2.5 Flash. Generates Stats, Skills, Feats, and Backstory automatically.
+          {t('aiDisclaimer')}
         </p>
       </div>
     </div>
@@ -168,11 +171,11 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
           {/* Top Bar: Name Only */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
-               <Shield className="w-5 h-5" /> Core Identity
+               <Shield className="w-5 h-5" /> {t('coreIdentity')}
              </h3>
              
              <div className="space-y-1">
-                 <label className="text-xs text-gray-400 uppercase font-bold">Character Name</label>
+                 <label className="text-xs text-gray-400 uppercase font-bold">{t('characterName')}</label>
                  <div className="flex gap-2">
                     <input 
                       type="text" 
@@ -183,7 +186,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                     <button 
                       onClick={onSuggestName}
                       className="bg-dnd-dark border border-white/10 hover:border-dnd-gold p-2 rounded text-dnd-gold"
-                      title="Suggest Name"
+                      title={t('suggestName')}
                     >
                       <Sparkles className="w-4 h-4" />
                     </button>
@@ -193,30 +196,30 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
 
           {/* Origin Section (Species, Background, Alignment) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-             {renderSelectionCard("Species", character.species, <Users className="w-5 h-5"/>, () => setActiveModal('species'))}
-             {renderSelectionCard("Background", character.background, <Landmark className="w-5 h-5"/>, () => setActiveModal('background'))}
-             {renderSelectionCard("Alignment", character.alignment, <Scale className="w-5 h-5"/>, () => setActiveModal('alignment'))}
+             {renderSelectionCard(t('species'), character.species, <Users className="w-5 h-5"/>, () => setActiveModal('species'))}
+             {renderSelectionCard(t('background'), character.background, <Landmark className="w-5 h-5"/>, () => setActiveModal('background'))}
+             {renderSelectionCard(t('alignment'), character.alignment, <Scale className="w-5 h-5"/>, () => setActiveModal('alignment'))}
           </div>
 
           {/* Class & Level Progression */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
                <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
-                 <Crown className="w-5 h-5" /> Class & Level Progression
+                 <Crown className="w-5 h-5" /> {t('classProgression')}
                </h3>
                <button 
                  onClick={() => setActiveModal('class')}
                  className="bg-dnd-gold text-dnd-dark font-bold px-4 py-1.5 rounded hover:bg-yellow-600 flex items-center gap-2 text-sm transition-colors shadow-lg shadow-dnd-gold/10"
                >
-                 <Plus className="w-4 h-4" /> Add Level
+                 <Plus className="w-4 h-4" /> {t('addLevel')}
                </button>
              </div>
 
              <div className="grid grid-cols-1 gap-4">
                {character.classHistory.length === 0 && (
                  <div className="text-center py-8 border border-dashed border-white/10 rounded-lg bg-black/20">
-                   <p className="text-gray-500 italic">No levels added yet.</p>
-                   <p className="text-xs text-gray-600 mt-1">Click "Add Level" to choose a class.</p>
+                   <p className="text-gray-500 italic">{t('noLevels')}</p>
+                   <p className="text-xs text-gray-600 mt-1">{t('clickAddLevel')}</p>
                  </div>
                )}
                {character.classHistory.map((levelEntry, idx) => (
@@ -230,9 +233,9 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                             <h4 className="font-bold text-base text-gray-200">{levelEntry.className}</h4>
                             <div className="flex gap-2">
                                 <span className="text-[10px] text-cyan-400 uppercase border border-cyan-900 bg-cyan-950/30 px-1.5 rounded tracking-wider">
-                                    Hit Die: d{levelEntry.hitDie}
+                                    {t('hitDie')}: d{levelEntry.hitDie}
                                 </span>
-                                {idx === 0 && <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">Primary</span>}
+                                {idx === 0 && <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">{t('primary')}</span>}
                             </div>
                          </div>
                       </div>
@@ -240,7 +243,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                       <button 
                         onClick={() => removeClassLevel(idx)}
                         className="p-2 text-gray-600 hover:text-red-400 hover:bg-white/5 rounded transition-all"
-                        title="Remove Level"
+                        title={t('remove')}
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -250,7 +253,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                {character.classHistory.length > 0 && (
                    <div className="flex justify-end pt-2">
                        <div className="text-xs text-gray-500 uppercase font-bold">
-                           Total Level: <span className="text-white text-lg ml-1">{character.classHistory.length}</span>
+                           {t('totalLevel')}: <span className="text-white text-lg ml-1">{character.classHistory.length}</span>
                        </div>
                    </div>
                )}
@@ -260,9 +263,9 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
           {/* Skills Section */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
             <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center justify-between">
-               <div className="flex items-center gap-2"><BookOpen className="w-5 h-5" /> Skill Proficiencies</div>
+               <div className="flex items-center gap-2"><BookOpen className="w-5 h-5" /> {t('skillProficiencies')}</div>
                <div className="text-xs text-gray-500 font-sans font-normal">
-                 PB: <span className="text-dnd-gold">+{getProficiencyBonus(character.level)}</span>
+                 {t('pb')}: <span className="text-dnd-gold">+{getProficiencyBonus(character.level)}</span>
                </div>
              </h3>
              
@@ -316,21 +319,21 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
                <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
-                 <Zap className="w-5 h-5" /> Features & Traits
+                 <Zap className="w-5 h-5" /> {t('featuresTraits')}
                </h3>
                <button 
                  onClick={onOpenFeatModal}
                  className="bg-dnd-gold text-dnd-dark font-bold px-4 py-1.5 rounded hover:bg-yellow-600 flex items-center gap-2 text-sm transition-colors shadow-lg shadow-dnd-gold/10"
                >
-                 <Plus className="w-4 h-4" /> Add Feature
+                 <Plus className="w-4 h-4" /> {t('addFeature')}
                </button>
              </div>
 
              <div className="grid grid-cols-1 gap-4">
                {character.feats.length === 0 && (
                  <div className="text-center py-8 border border-dashed border-white/10 rounded-lg bg-black/20">
-                   <p className="text-gray-500 italic">No features added yet.</p>
-                   <p className="text-xs text-gray-600 mt-1">Click "Add Feature" to browse abilities.</p>
+                   <p className="text-gray-500 italic">{t('noFeatures')}</p>
+                   <p className="text-xs text-gray-600 mt-1">{t('clickAddFeature')}</p>
                  </div>
                )}
                {character.feats.map((feat, idx) => (
@@ -341,10 +344,10 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                              <h4 className={`font-bold text-base ${feat.isActive ? 'text-dnd-gold text-shadow-glow' : 'text-gray-200'}`}>{feat.name}</h4>
                              <span className="text-[10px] text-cyan-400 uppercase border border-cyan-900 bg-cyan-950/30 px-1.5 rounded tracking-wider">{feat.source}</span>
                              {feat.type === 'active' && (
-                               <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">Active</span>
+                               <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">{t('active')}</span>
                              )}
                              {feat.repeatable && (
-                               <span className="text-[10px] text-purple-400 uppercase border border-purple-900 bg-purple-950/30 px-1.5 rounded tracking-wider">Repeatable</span>
+                               <span className="text-[10px] text-purple-400 uppercase border border-purple-900 bg-purple-950/30 px-1.5 rounded tracking-wider">{t('repeatable')}</span>
                              )}
                          </div>
                          <p className="text-sm text-gray-400 leading-snug">{feat.description}</p>
@@ -360,14 +363,14 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                                 <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-md ${feat.isActive ? 'translate-x-6' : 'translate-x-0'}`} />
                              </button>
                              <span className={`text-[9px] uppercase font-bold tracking-wider ${feat.isActive ? 'text-dnd-gold' : 'text-gray-600'}`}>
-                               {feat.isActive ? 'On' : 'Off'}
+                               {feat.isActive ? t('on') : t('off')}
                              </span>
                            </div>
                          )}
                          <button 
                            onClick={() => removeFeat(idx)}
                            className="p-2 text-gray-600 hover:text-red-400 hover:bg-white/5 rounded transition-all"
-                           title="Remove Feature"
+                           title={t('remove')}
                          >
                            <Trash2 className="w-5 h-5" />
                          </button>
@@ -381,21 +384,21 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
            {/* Magic & Spellcasting Section */}
            <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
             <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
-               <Flame className="w-5 h-5" /> Magic & Spellcasting
+               <Flame className="w-5 h-5" /> {t('magicSpellcasting')}
             </h3>
             
             <div className="space-y-6">
                 <div>
-                    <label className="text-xs text-gray-400 uppercase font-bold block mb-2">Spellcasting Ability</label>
+                    <label className="text-xs text-gray-400 uppercase font-bold block mb-2">{t('spellAbility')}</label>
                     <select 
                         value={character.spellcastingAbility}
                         onChange={(e) => updateField('spellcastingAbility', e.target.value)}
                         className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none"
                     >
-                        <option value="None">None</option>
-                        <option value="Intelligence">Intelligence (Wizard, Artificer, Arcane Trickster, Eldritch Knight)</option>
-                        <option value="Wisdom">Wisdom (Cleric, Druid, Ranger, Monk)</option>
-                        <option value="Charisma">Charisma (Bard, Paladin, Sorcerer, Warlock)</option>
+                        <option value="None">{t('none')}</option>
+                        <option value="Intelligence">{t('Intelligence')} (Wizard, Artificer, Arcane Trickster, Eldritch Knight)</option>
+                        <option value="Wisdom">{t('Wisdom')} (Cleric, Druid, Ranger, Monk)</option>
+                        <option value="Charisma">{t('Charisma')} (Bard, Paladin, Sorcerer, Warlock)</option>
                     </select>
                 </div>
 
@@ -403,22 +406,22 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                     <>
                         <div className="flex gap-4 p-4 bg-dnd-dark/30 rounded-lg border border-white/5">
                             <div className="flex-1 text-center">
-                                <span className="text-xs text-gray-500 uppercase font-bold block">Spell Save DC</span>
+                                <span className="text-xs text-gray-500 uppercase font-bold block">{t('spellSaveDC')}</span>
                                 <span className="text-2xl font-serif font-bold text-dnd-gold">{calculateSpellSaveDC(character)}</span>
                             </div>
                             <div className="w-px bg-white/10"></div>
                             <div className="flex-1 text-center">
-                                <span className="text-xs text-gray-500 uppercase font-bold block">Attack Bonus</span>
+                                <span className="text-xs text-gray-500 uppercase font-bold block">{t('attackBonus')}</span>
                                 <span className="text-2xl font-serif font-bold text-dnd-gold">+{calculateSpellAttackBonus(character)}</span>
                             </div>
                         </div>
 
                         <div>
-                            <h4 className="text-sm font-bold text-gray-300 mb-3 border-b border-white/5 pb-1">Spell Slots (Max)</h4>
+                            <h4 className="text-sm font-bold text-gray-300 mb-3 border-b border-white/5 pb-1">{t('spellSlots')}</h4>
                             <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
                                 {Array.from({ length: 9 }).map((_, i) => (
                                     <div key={i} className="text-center">
-                                        <label className="text-[10px] text-gray-500 block mb-1">Lvl {i + 1}</label>
+                                        <label className="text-[10px] text-gray-500 block mb-1">{t('level')} {i + 1}</label>
                                         <input 
                                             type="number" 
                                             min="0"
@@ -433,11 +436,11 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                         </div>
 
                         <div>
-                            <h4 className="text-sm font-bold text-gray-300 mb-3 border-b border-white/5 pb-1">Spellbook</h4>
+                            <h4 className="text-sm font-bold text-gray-300 mb-3 border-b border-white/5 pb-1">{t('spellbook')}</h4>
                             
                             <div className="flex gap-2 mb-4 items-end">
                                 <div className="flex-1">
-                                    <label className="text-[10px] text-gray-500 block mb-1">Spell Name</label>
+                                    <label className="text-[10px] text-gray-500 block mb-1">{t('spellName')}</label>
                                     <input 
                                         type="text" 
                                         value={newSpellName}
@@ -448,7 +451,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                                     />
                                 </div>
                                 <div className="w-20">
-                                    <label className="text-[10px] text-gray-500 block mb-1">Level</label>
+                                    <label className="text-[10px] text-gray-500 block mb-1">{t('level')}</label>
                                     <input 
                                         type="number" 
                                         min="0"
@@ -468,7 +471,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
 
                             <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                                 {character.spells.length === 0 && (
-                                    <p className="text-sm text-gray-500 italic text-center py-2">No spells added.</p>
+                                    <p className="text-sm text-gray-500 italic text-center py-2">{t('noSpells')}</p>
                                 )}
                                 {character.spells.sort((a,b) => a.level - b.level).map((spell, idx) => (
                                     <div key={idx} className="flex items-center gap-3 bg-black/20 p-2 rounded border border-white/5 group hover:border-dnd-gold/30">
@@ -483,7 +486,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                                                 onClick={() => toggleSpellPrepared(character.spells.indexOf(spell))}
                                                 className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${spell.prepared ? 'bg-indigo-900/50 text-indigo-300 border-indigo-500/50' : 'bg-gray-800 text-gray-500 border-gray-700'}`}
                                             >
-                                                {spell.prepared ? 'Prepared' : 'Unprepared'}
+                                                {spell.prepared ? t('prepared') : t('unprepared')}
                                             </button>
                                             <button 
                                                 onClick={() => removeSpell(character.spells.indexOf(spell))}
@@ -505,13 +508,13 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
                  <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
-                   <Backpack className="w-5 h-5" /> Equipment
+                   <Backpack className="w-5 h-5" /> {t('equipment')}
                  </h3>
                  <button 
                     onClick={handleAddExampleGear}
                     className="text-xs text-dnd-gold bg-dnd-gold/10 px-3 py-1.5 rounded-full border border-dnd-gold/20 hover:bg-dnd-gold hover:text-dnd-dark transition-all flex items-center gap-1"
                  >
-                    <Package className="w-3 h-3" /> Load Starter Kit
+                    <Package className="w-3 h-3" /> {t('loadStarter')}
                  </button>
              </div>
              
@@ -519,7 +522,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
              <div className="bg-black/20 p-4 rounded-lg border border-white/5 mb-4">
                 <div className="grid grid-cols-12 gap-3 mb-3">
                     <div className="col-span-12 md:col-span-5">
-                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Item Name</label>
+                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">{t('itemName')}</label>
                         <input 
                             type="text" 
                             value={newItemName}
@@ -529,7 +532,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                         />
                     </div>
                     <div className="col-span-12 md:col-span-4">
-                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Category</label>
+                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">{t('category')}</label>
                         <select 
                             value={newItemCategory}
                             onChange={(e) => setNewItemCategory(e.target.value)}
@@ -548,12 +551,12 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                             onClick={handleAddEquipment}
                             className="w-full bg-dnd-gold text-dnd-dark font-bold py-2 rounded hover:bg-yellow-600 transition-colors text-sm flex items-center justify-center gap-1"
                         >
-                            <Plus className="w-4 h-4" /> Add Item
+                            <Plus className="w-4 h-4" /> {t('addItem')}
                         </button>
                      </div>
                 </div>
                 <div>
-                     <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Description (Optional)</label>
+                     <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">{t('description')} (Optional)</label>
                      <input 
                         type="text" 
                         value={newItemDesc}
@@ -569,14 +572,14 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
              <div className="space-y-2 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {character.equipment.length === 0 && (
                   <div className="text-gray-500 text-sm italic text-center py-6 bg-black/10 rounded border border-white/5 border-dashed">
-                      Inventory is empty. Add items or load the starter kit.
+                      {t('emptyInventory')}
                   </div>
                 )}
                 {character.equipment.map((item, idx) => (
                   <div key={idx} className="flex gap-3 bg-dnd-dark/40 p-3 rounded border border-white/5 group hover:border-dnd-gold/30 transition-all items-start">
                      {/* Quantity Control */}
                      <div className="flex flex-col items-center w-12">
-                         <label className="text-[9px] text-gray-500 uppercase font-bold mb-1">Qty</label>
+                         <label className="text-[9px] text-gray-500 uppercase font-bold mb-1">{t('qty')}</label>
                          <input 
                             type="number" 
                             min="1"
@@ -595,7 +598,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                             <button 
                                 onClick={() => removeEquipment(idx)}
                                 className="p-2 text-gray-600 hover:text-red-400 hover:bg-white/5 rounded transition-all"
-                                title="Remove Item"
+                                title={t('remove')}
                             >
                                 <Trash2 className="w-5 h-5" />
                             </button>
@@ -612,26 +615,26 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
           {/* Backstory */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
              <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
-               <Scroll className="w-5 h-5" /> Backstory & Appearance
+               <Scroll className="w-5 h-5" /> {t('backstoryAppearance')}
              </h3>
              
              <div className="space-y-4">
                 <div className="flex justify-between items-end">
-                  <label className="text-xs text-gray-400 uppercase font-bold">Backstory</label>
+                  <label className="text-xs text-gray-400 uppercase font-bold">{t('backstory')}</label>
                   <button 
                     onClick={onGenerateBackstory}
                     disabled={isGeneratingBackstory}
                     className="text-xs text-indigo-400 flex items-center gap-1 hover:text-indigo-300"
                   >
                     {isGeneratingBackstory ? <RefreshCw className="w-3 h-3 animate-spin"/> : <Sparkles className="w-3 h-3"/>}
-                    AI Writer
+                    {t('aiWriter')}
                   </button>
                 </div>
                 <textarea 
                   value={character.backstory}
                   onChange={(e) => updateField('backstory', e.target.value)}
                   className="w-full h-32 bg-dnd-dark border border-white/10 rounded p-3 text-sm text-gray-300 focus:border-dnd-gold outline-none resize-none leading-relaxed"
-                  placeholder="Describe your character's past..."
+                  placeholder={t('backstoryPlaceholder')}
                 />
              </div>
           </div>
@@ -644,25 +647,25 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
            <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6 lg:sticky lg:top-24">
               <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-6">
                  <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
-                   <Heart className="w-5 h-5" /> Combat Vitals
+                   <Heart className="w-5 h-5" /> {t('combatVitals')}
                  </h3>
                  <button 
                    onClick={autoCalculateVitals}
                    className="text-xs flex items-center gap-1 bg-white/5 hover:bg-white/10 px-2 py-1 rounded text-dnd-gold transition-colors"
                    title="Recalculate Max HP based on Class, Level & Constitution"
                  >
-                   <RefreshCw className="w-3 h-3" /> Auto Calc Max
+                   <RefreshCw className="w-3 h-3" /> {t('autoCalc')}
                  </button>
               </div>
 
               {/* Health Section */}
               <div className="bg-dnd-dark/30 rounded-lg border border-white/5 p-4 mb-4">
                   <div className="flex items-center gap-2 mb-3 text-gray-400 uppercase text-xs font-bold">
-                      <Activity className="w-3 h-3" /> Health Points
+                      <Activity className="w-3 h-3" /> {t('healthPoints')}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                       <div>
-                          <label className="block text-[10px] text-gray-500 uppercase text-center mb-1">Current</label>
+                          <label className="block text-[10px] text-gray-500 uppercase text-center mb-1">{t('current')}</label>
                           <input 
                               type="number" 
                               value={character.currentHitPoints}
@@ -671,7 +674,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                           />
                       </div>
                       <div>
-                          <label className="block text-[10px] text-gray-500 uppercase text-center mb-1">Maximum</label>
+                          <label className="block text-[10px] text-gray-500 uppercase text-center mb-1">{t('maximum')}</label>
                           <input 
                               type="number" 
                               value={character.hitPoints}
@@ -686,7 +689,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
               <div className="grid grid-cols-2 gap-4 mb-6">
                   {/* Armor Class */}
                   <div className="bg-dnd-dark/30 rounded-lg border border-white/5 p-3 text-center">
-                       <label className="block text-xs text-gray-400 uppercase font-bold mb-1">AC</label>
+                       <label className="block text-xs text-gray-400 uppercase font-bold mb-1">{t('armorClass')}</label>
                        <input 
                           type="number" 
                           value={character.armorClass}
@@ -697,7 +700,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
 
                   {/* Hit Dice */}
                   <div className="bg-dnd-dark/30 rounded-lg border border-white/5 p-3 text-center">
-                       <label className="block text-xs text-gray-400 uppercase font-bold mb-1">Hit Dice</label>
+                       <label className="block text-xs text-gray-400 uppercase font-bold mb-1">{t('hitDie')}</label>
                        <div className="flex items-center justify-center gap-1">
                           <input 
                              type="number"
@@ -714,7 +717,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
               </div>
               
               <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-6 flex items-center gap-2">
-                <Sword className="w-5 h-5" /> Ability Scores
+                <Sword className="w-5 h-5" /> {t('Strength')} & {t('Dexterity')}...
               </h3>
               <div className="grid grid-cols-2 gap-4 justify-items-center">
                  {(Object.keys(character.stats) as Ability[]).map((ability) => (
@@ -732,8 +735,8 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
 
       {activeModal === 'species' && (
         <SelectionModal 
-           title="Select Species"
-           description="Choose your character's species, determining their innate traits and ancestry."
+           title={t('selectSpecies')}
+           description={t('selectSpeciesDesc')}
            options={SPECIES_DATA}
            selected={character.species}
            onSelect={(val) => updateField('species', val)}
@@ -743,8 +746,8 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
       )}
       {activeModal === 'class' && (
         <SelectionModal 
-           title="Select Class for Level"
-           description="Choose the class for this character level."
+           title={t('selectClass')}
+           description={t('selectClassDesc')}
            options={CLASS_DATA}
            selected={""} 
            onSelect={(val) => addClassLevel(val)}
@@ -754,8 +757,8 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
       )}
       {activeModal === 'background' && (
         <SelectionModal 
-           title="Select Background"
-           description="Your background reveals where you came from and how you became an adventurer."
+           title={t('selectBackground')}
+           description={t('selectBackgroundDesc')}
            options={BACKGROUND_DATA}
            selected={character.background}
            onSelect={(val) => updateField('background', val)}
@@ -765,8 +768,8 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
       )}
       {activeModal === 'alignment' && (
         <SelectionModal 
-           title="Select Alignment"
-           description="Alignment matches your character's moral compass and view of the world."
+           title={t('selectAlignment')}
+           description={t('selectAlignmentDesc')}
            options={ALIGNMENT_DATA}
            selected={character.alignment}
            onSelect={(val) => updateField('alignment', val)}

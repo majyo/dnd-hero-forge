@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { X, Star, ArrowLeft, PenTool, Check, Plus } from 'lucide-react';
 import { Feat, FeatureType, Character } from '../types';
 import { FEATURES_DATA } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface FeatModalProps {
   character: Character;
@@ -11,6 +12,7 @@ interface FeatModalProps {
 }
 
 export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddFeat }) => {
+  const { t } = useLanguage();
   const [isCustomFeatView, setIsCustomFeatView] = useState(false);
   const [customFeat, setCustomFeat] = useState<Feat>({
     name: '',
@@ -59,10 +61,10 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                     <ArrowLeft className="w-6 h-6" />
                  </button>
               ) : <Star className="w-6 h-6" />}
-              {isCustomFeatView ? "Create Custom Feature" : "Select Feature"}
+              {isCustomFeatView ? t('createCustomFeature') : t('selectFeature')}
             </h2>
             <p className="text-sm text-gray-400 mt-1">
-                {isCustomFeatView ? "Define your own feat, trait, or ability." : "Choose feats, class features, or species traits to add."}
+                {isCustomFeatView ? t('createCustomFeatureDesc') : t('selectFeatureDesc')}
             </p>
           </div>
           <button 
@@ -80,7 +82,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
              // Custom Feature Form
              <div className="max-w-2xl mx-auto space-y-6 bg-dnd-slate/30 p-8 rounded-xl border border-white/5">
                 <div>
-                    <label className="block text-xs uppercase font-bold text-gray-400 mb-2">Feature Name <span className="text-red-400">*</span></label>
+                    <label className="block text-xs uppercase font-bold text-gray-400 mb-2">{t('featureName')} <span className="text-red-400">*</span></label>
                     <input 
                         type="text" 
                         value={customFeat.name}
@@ -92,7 +94,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs uppercase font-bold text-gray-400 mb-2">Source / Attribute</label>
+                        <label className="block text-xs uppercase font-bold text-gray-400 mb-2">{t('source')}</label>
                         <input 
                             type="text" 
                             value={customFeat.source}
@@ -102,7 +104,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                         />
                     </div>
                     <div>
-                        <label className="block text-xs uppercase font-bold text-gray-400 mb-2">Type</label>
+                        <label className="block text-xs uppercase font-bold text-gray-400 mb-2">{t('type')}</label>
                         <select 
                             value={customFeat.type}
                             onChange={(e) => setCustomFeat({...customFeat, type: e.target.value as FeatureType})}
@@ -115,7 +117,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                 </div>
 
                 <div>
-                    <label className="block text-xs uppercase font-bold text-gray-400 mb-2">Description</label>
+                    <label className="block text-xs uppercase font-bold text-gray-400 mb-2">{t('description')}</label>
                     <textarea 
                         value={customFeat.description}
                         onChange={(e) => setCustomFeat({...customFeat, description: e.target.value})}
@@ -133,7 +135,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                         className="w-4 h-4 rounded border-gray-500 text-dnd-gold focus:ring-dnd-gold bg-transparent"
                     />
                     <label htmlFor="repeatable" className="text-sm text-gray-300 cursor-pointer">
-                        Repeatable (Can be taken multiple times)
+                        {t('repeatable')}
                     </label>
                 </div>
 
@@ -142,7 +144,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                         onClick={() => setIsCustomFeatView(false)}
                         className="flex-1 py-3 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors font-bold"
                     >
-                        Cancel
+                        {t('cancel')}
                     </button>
                     <button 
                         onClick={handleSaveCustomFeat}
@@ -150,7 +152,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                         className={`flex-1 py-3 rounded-lg font-bold text-dnd-dark transition-colors flex items-center justify-center gap-2 ${!customFeat.name.trim() ? 'bg-gray-600 cursor-not-allowed' : 'bg-dnd-gold hover:bg-yellow-500'}`}
                     >
                         <Plus className="w-5 h-5" />
-                        Add Feature
+                        {t('addFeature')}
                     </button>
                 </div>
              </div>
@@ -166,8 +168,8 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                  <div className="w-12 h-12 rounded-full bg-dnd-gold/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform text-dnd-gold">
                     <PenTool className="w-6 h-6" />
                  </div>
-                 <h3 className="font-serif font-bold text-lg text-dnd-gold">Create Custom</h3>
-                 <p className="text-sm text-center text-gray-400 mt-2">Define a unique trait or homebrew ability</p>
+                 <h3 className="font-serif font-bold text-lg text-dnd-gold">{t('createCustom')}</h3>
+                 <p className="text-sm text-center text-gray-400 mt-2">{t('customFeatDesc')}</p>
               </button>
 
               {FEATURES_DATA.map((feat, idx) => {
@@ -192,7 +194,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                       </h3>
                       {isAdded && !feat.repeatable ? (
                         <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
-                          <Check className="w-3 h-3" /> Added
+                          <Check className="w-3 h-3" /> {t('added')}
                         </span>
                       ) : (
                         <div className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center group-hover:border-dnd-gold group-hover:bg-dnd-gold group-hover:text-dnd-dark transition-colors">
@@ -218,7 +220,7 @@ export const FeatModal: React.FC<FeatModalProps> = ({ character, onClose, onAddF
                       </span>
                       {feat.repeatable && (
                          <span className="text-[10px] uppercase font-bold tracking-wider text-purple-400 border border-purple-400/30 px-1.5 py-0.5 rounded bg-purple-950/20">
-                          Repeatable
+                          {t('repeatable')}
                         </span>
                       )}
                     </div>
