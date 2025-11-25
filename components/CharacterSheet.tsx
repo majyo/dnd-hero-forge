@@ -1,5 +1,7 @@
 
 
+
+
 import React from 'react';
 import { Download, Flame, Shield, Activity, Heart } from 'lucide-react';
 import { Character, Ability } from '../types';
@@ -274,11 +276,22 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = ({ character }) => 
               {character.equipment.length > 0 && (
                 <div className="mt-8">
                   <h3 className="font-serif font-bold text-xl text-dnd-red border-b-2 border-dnd-red mb-4">Equipment</h3>
-                  <ul className="list-disc list-inside columns-1 md:columns-2 gap-8 text-gray-800 text-sm">
+                  <div className="grid grid-cols-1 gap-2">
                     {character.equipment.map((item, idx) => (
-                      <li key={idx} className="mb-1 break-inside-avoid">{item}</li>
+                      <div key={idx} className="flex items-start gap-4 p-3 bg-gray-50 border border-gray-200 rounded">
+                         <div className="text-dnd-dark font-bold font-serif text-lg w-8 text-center border-r border-gray-300 pr-3">
+                            {item.quantity}
+                         </div>
+                         <div className="flex-1">
+                            <div className="flex justify-between items-baseline">
+                                <span className="font-bold text-dnd-dark">{item.name}</span>
+                                <span className="text-[10px] uppercase text-gray-500 tracking-wider">{item.category}</span>
+                            </div>
+                            <p className="text-sm text-gray-600 italic">{item.description}</p>
+                         </div>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
 

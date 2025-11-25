@@ -1,5 +1,7 @@
 
 
+
+
 import React, { useState } from 'react';
 import { AICharacterSuggestion, ProficiencyLevel } from './types';
 import { SKILL_DATA, CLASS_HIT_DICE } from './constants';
@@ -25,6 +27,7 @@ const App: React.FC = () => {
     toggleFeatureActive, 
     addEquipment, 
     removeEquipment, 
+    updateEquipmentQuantity,
     autoCalculateVitals,
     addSpell,
     removeSpell,
@@ -92,7 +95,8 @@ const App: React.FC = () => {
         // Reset spells/slots on quick build for now or we could try to generate them
         spellcastingAbility: 'None',
         spellSlots: [0,0,0,0,0,0,0,0,0],
-        spells: []
+        spells: [],
+        equipment: []
       }));
     } catch (e) {
       alert("Failed to generate character. Please check API configuration.");
@@ -135,6 +139,7 @@ const App: React.FC = () => {
             toggleFeatureActive={toggleFeatureActive}
             addEquipment={addEquipment}
             removeEquipment={removeEquipment}
+            updateEquipmentQuantity={updateEquipmentQuantity}
             autoCalculateVitals={autoCalculateVitals}
             addSpell={addSpell}
             removeSpell={removeSpell}

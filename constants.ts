@@ -1,5 +1,7 @@
 
 
+
+
 // D&D 2024 Core Options (Simplified list)
 
 export interface SelectionOption {
@@ -181,4 +183,12 @@ export const FEATURES_DATA = [
     type: "active",
     repeatable: false
   }
+];
+
+export const EXAMPLE_EQUIPMENT = [
+  { name: "Longsword", category: "Weapon", description: "1d8 slashing damage, Versatile (1d10).", quantity: 1 },
+  { name: "Chain Mail", category: "Armor", description: "AC 16, Strength 13 required, Stealth disadvantage.", quantity: 1 },
+  { name: "Healing Potion", category: "Consumable", description: "Restores 2d4 + 2 hit points.", quantity: 2 },
+  { name: "Explorer's Pack", category: "Adventuring Gear", description: "Includes a backpack, a bedroll, a mess kit, a tinderbox, 10 torches, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.", quantity: 1 },
+  { name: "Shield", category: "Armor", description: "+2 to Armor Class.", quantity: 1 }
 ];

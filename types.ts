@@ -37,6 +37,13 @@ export interface Spell {
   prepared: boolean;
 }
 
+export interface EquipmentItem {
+  name: string;
+  category: string;
+  description: string;
+  quantity: number;
+}
+
 export interface ClassLevelEntry {
   id: string;
   className: string;
@@ -61,7 +68,7 @@ export interface Character {
   currentHitDice: number;
   backstory: string;
   appearance: string;
-  equipment: string[];
+  equipment: EquipmentItem[];
   proficiencies: string[];
   spellcastingAbility: string;
   spellSlots: number[];

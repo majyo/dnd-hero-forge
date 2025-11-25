@@ -1,9 +1,11 @@
 
 
+
+
 import React, { useState } from 'react';
-import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight, Crown } from 'lucide-react';
-import { Ability, Character, ProficiencyLevel, Spell } from '../types';
-import { SPECIES_DATA, CLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE } from '../constants';
+import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Check, Users, Scale, Landmark, ChevronRight, Crown, Package } from 'lucide-react';
+import { Ability, Character, ProficiencyLevel, Spell, EquipmentItem } from '../types';
+import { SPECIES_DATA, CLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE, EXAMPLE_EQUIPMENT } from '../constants';
 import { StatBox } from './StatBox';
 import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
@@ -17,8 +19,9 @@ interface CharacterEditorProps {
   setSkillLevel: (skillName: string, level: ProficiencyLevel) => void;
   removeFeat: (index: number) => void;
   toggleFeatureActive: (index: number) => void;
-  addEquipment: (item: string) => void;
+  addEquipment: (item: EquipmentItem) => void;
   removeEquipment: (index: number) => void;
+  updateEquipmentQuantity: (index: number, quantity: number) => void;
   autoCalculateVitals: () => void;
   addSpell: (spell: Spell) => void;
   removeSpell: (index: number) => void;
@@ -48,6 +51,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   toggleFeatureActive,
   addEquipment,
   removeEquipment,
+  updateEquipmentQuantity,
   autoCalculateVitals,
   addSpell,
   removeSpell,
@@ -62,7 +66,10 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   onSuggestName,
   onOpenFeatModal
 }) => {
-  const [newItem, setNewItem] = useState('');
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemCategory, setNewItemCategory] = useState('General');
+  const [newItemDesc, setNewItemDesc] = useState('');
+  
   const [newSpellName, setNewSpellName] = useState('');
   const [newSpellLevel, setNewSpellLevel] = useState(0);
   const [activeModal, setActiveModal] = useState<'species' | 'class' | 'background' | 'alignment' | null>(null);
@@ -70,8 +77,22 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   const hitDie = CLASS_HIT_DICE[character.classHistory[0]?.className] || 8;
 
   const handleAddEquipment = () => {
-    addEquipment(newItem);
-    setNewItem('');
+    if (!newItemName.trim()) return;
+    addEquipment({
+      name: newItemName.trim(),
+      category: newItemCategory,
+      description: newItemDesc,
+      quantity: 1
+    });
+    setNewItemName('');
+    setNewItemDesc('');
+    setNewItemCategory('General');
+  };
+
+  const handleAddExampleGear = () => {
+     EXAMPLE_EQUIPMENT.forEach(item => {
+        addEquipment(item);
+     });
   };
 
   const handleAddSpell = () => {
@@ -486,41 +507,107 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
 
           {/* Equipment Section */}
           <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
-             <h3 className="text-dnd-gold font-serif text-lg border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
-               <Backpack className="w-5 h-5" /> Equipment
-             </h3>
+             <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
+                 <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
+                   <Backpack className="w-5 h-5" /> Equipment
+                 </h3>
+                 <button 
+                    onClick={handleAddExampleGear}
+                    className="text-xs text-dnd-gold bg-dnd-gold/10 px-3 py-1.5 rounded-full border border-dnd-gold/20 hover:bg-dnd-gold hover:text-dnd-dark transition-all flex items-center gap-1"
+                 >
+                    <Package className="w-3 h-3" /> Load Starter Kit
+                 </button>
+             </div>
              
-             <div className="flex gap-2 mb-4">
-                <input 
-                  type="text" 
-                  value={newItem}
-                  onChange={(e) => setNewItem(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddEquipment()}
-                  placeholder="Add item (e.g. Longsword, Rope, 50gp)"
-                  className="flex-1 bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none placeholder-gray-600"
-                />
-                <button 
-                  onClick={handleAddEquipment}
-                  className="bg-dnd-gold text-dnd-dark font-bold px-4 py-2 rounded hover:bg-yellow-600 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+             {/* Add Item Form */}
+             <div className="bg-black/20 p-4 rounded-lg border border-white/5 mb-4">
+                <div className="grid grid-cols-12 gap-3 mb-3">
+                    <div className="col-span-12 md:col-span-5">
+                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Item Name</label>
+                        <input 
+                            type="text" 
+                            value={newItemName}
+                            onChange={(e) => setNewItemName(e.target.value)}
+                            placeholder="Longsword"
+                            className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none text-sm"
+                        />
+                    </div>
+                    <div className="col-span-12 md:col-span-4">
+                        <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Category</label>
+                        <select 
+                            value={newItemCategory}
+                            onChange={(e) => setNewItemCategory(e.target.value)}
+                            className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-white focus:border-dnd-gold outline-none text-sm"
+                        >
+                            <option value="General">General</option>
+                            <option value="Weapon">Weapon</option>
+                            <option value="Armor">Armor</option>
+                            <option value="Consumable">Consumable</option>
+                            <option value="Tool">Tool</option>
+                            <option value="Magic Item">Magic Item</option>
+                        </select>
+                    </div>
+                     <div className="col-span-12 md:col-span-3 flex items-end">
+                         <button 
+                            onClick={handleAddEquipment}
+                            className="w-full bg-dnd-gold text-dnd-dark font-bold py-2 rounded hover:bg-yellow-600 transition-colors text-sm flex items-center justify-center gap-1"
+                        >
+                            <Plus className="w-4 h-4" /> Add Item
+                        </button>
+                     </div>
+                </div>
+                <div>
+                     <label className="block text-[10px] text-gray-500 uppercase font-bold mb-1">Description (Optional)</label>
+                     <input 
+                        type="text" 
+                        value={newItemDesc}
+                        onChange={(e) => setNewItemDesc(e.target.value)}
+                        placeholder="1d8 Slashing, Versatile..."
+                        className="w-full bg-dnd-dark border border-white/10 rounded px-3 py-2 text-gray-300 focus:border-dnd-gold outline-none text-sm"
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddEquipment()}
+                     />
+                </div>
              </div>
 
-             <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+             {/* Inventory List */}
+             <div className="space-y-2 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {character.equipment.length === 0 && (
-                  <p className="text-gray-500 text-sm italic">No equipment added.</p>
+                  <div className="text-gray-500 text-sm italic text-center py-6 bg-black/10 rounded border border-white/5 border-dashed">
+                      Inventory is empty. Add items or load the starter kit.
+                  </div>
                 )}
                 {character.equipment.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center bg-black/20 p-2 rounded border border-white/5 group hover:border-dnd-gold/30 transition-colors">
-                     <span className="text-sm text-gray-300">{item}</span>
-                     <button 
-                       onClick={() => removeEquipment(idx)}
-                       className="text-gray-600 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-all"
-                       title="Remove Item"
-                     >
-                       <X className="w-4 h-4" />
-                     </button>
+                  <div key={idx} className="flex gap-3 bg-dnd-dark/40 p-3 rounded border border-white/5 group hover:border-dnd-gold/30 transition-all items-start">
+                     {/* Quantity Control */}
+                     <div className="flex flex-col items-center w-12">
+                         <label className="text-[9px] text-gray-500 uppercase font-bold mb-1">Qty</label>
+                         <input 
+                            type="number" 
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => updateEquipmentQuantity(idx, parseInt(e.target.value))}
+                            className="w-full bg-black/40 border border-white/10 rounded text-center text-white focus:border-dnd-gold outline-none text-sm py-1"
+                         />
+                     </div>
+
+                     <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h4 className="font-bold text-gray-200 text-sm">{item.name}</h4>
+                                <span className="text-[10px] text-indigo-400 uppercase tracking-wider">{item.category}</span>
+                            </div>
+                            <button 
+                                onClick={() => removeEquipment(idx)}
+                                className="text-gray-600 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-all"
+                                title="Remove Item"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {item.description && (
+                             <p className="text-xs text-gray-400 mt-1 italic leading-relaxed">{item.description}</p>
+                        )}
+                     </div>
                   </div>
                 ))}
              </div>

@@ -1,7 +1,9 @@
 
 
+
+
 import { useState } from 'react';
-import { Character, INITIAL_CHARACTER, Ability, ProficiencyLevel, Feat, Spell } from '../types';
+import { Character, INITIAL_CHARACTER, Ability, ProficiencyLevel, Feat, Spell, EquipmentItem } from '../types';
 import { calculateMaxHP, calculateAC, formatClassString } from '../utils/characterUtils';
 import { CLASS_HIT_DICE } from '../constants';
 
@@ -91,11 +93,10 @@ export const useCharacter = () => {
     });
   };
 
-  const addEquipment = (itemName: string) => {
-    if (!itemName.trim()) return;
+  const addEquipment = (item: EquipmentItem) => {
     setCharacter(prev => ({
       ...prev,
-      equipment: [...prev.equipment, itemName.trim()]
+      equipment: [...prev.equipment, item]
     }));
   };
 
@@ -104,6 +105,16 @@ export const useCharacter = () => {
       ...prev,
       equipment: prev.equipment.filter((_, i) => i !== index)
     }));
+  };
+
+  const updateEquipmentQuantity = (index: number, quantity: number) => {
+     setCharacter(prev => {
+       const newEquipment = [...prev.equipment];
+       if(newEquipment[index]) {
+         newEquipment[index] = { ...newEquipment[index], quantity: Math.max(1, quantity) };
+       }
+       return { ...prev, equipment: newEquipment };
+     });
   };
 
   const autoCalculateVitals = () => {
@@ -162,6 +173,7 @@ export const useCharacter = () => {
     toggleFeatureActive,
     addEquipment,
     removeEquipment,
+    updateEquipmentQuantity,
     autoCalculateVitals,
     addSpell,
     removeSpell,
