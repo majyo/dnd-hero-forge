@@ -1,7 +1,5 @@
 
 
-
-
 import { useState } from 'react';
 import { Character, INITIAL_CHARACTER, Ability, ProficiencyLevel, Feat, Spell, EquipmentItem } from '../types';
 import { calculateMaxHP, calculateAC, formatClassString } from '../utils/characterUtils';
@@ -21,11 +19,12 @@ export const useCharacter = () => {
     setCharacter(prev => ({ ...prev, [field]: value }));
   };
 
-  const addClassLevel = (className: string) => {
+  const addClassLevel = (subclassName: string, className: string) => {
     const hitDie = CLASS_HIT_DICE[className] || 8;
     const newEntry = {
       id: crypto.randomUUID(),
       className,
+      subclassName,
       hitDie
     };
 
@@ -160,6 +159,38 @@ export const useCharacter = () => {
       });
   };
 
+  const addToolProficiency = (tool: string) => {
+    if (!character.toolProficiencies.includes(tool)) {
+      setCharacter(prev => ({
+        ...prev,
+        toolProficiencies: [...prev.toolProficiencies, tool]
+      }));
+    }
+  };
+
+  const removeToolProficiency = (tool: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      toolProficiencies: prev.toolProficiencies.filter(t => t !== tool)
+    }));
+  };
+
+  const addLanguage = (language: string) => {
+    if (!character.languages.includes(language)) {
+      setCharacter(prev => ({
+        ...prev,
+        languages: [...prev.languages, language]
+      }));
+    }
+  };
+
+  const removeLanguage = (language: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      languages: prev.languages.filter(l => l !== language)
+    }));
+  };
+
   return {
     character,
     setCharacter,
@@ -178,6 +209,10 @@ export const useCharacter = () => {
     addSpell,
     removeSpell,
     toggleSpellPrepared,
-    updateSpellSlot
+    updateSpellSlot,
+    addToolProficiency,
+    removeToolProficiency,
+    addLanguage,
+    removeLanguage
   };
 };

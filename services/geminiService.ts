@@ -49,6 +49,16 @@ const characterSchema: Schema = {
       },
       description: "List of feats, class features, or species traits appropriate for the character."
     },
+    toolProficiencies: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
+        description: "List of tools or musical instruments the character is proficient in."
+    },
+    languages: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
+        description: "List of languages known, e.g. Common, Elvish, Draconic."
+    },
     shortBackstory: { type: Type.STRING },
     reasoning: { type: Type.STRING }
   },
@@ -63,6 +73,7 @@ export const generateCharacterFromPrompt = async (userPrompt: string): Promise<A
       If the prompt is vague, be creative. Ensure stats are optimized for the class using standard array or point buy logic (Max 20).
       Select 2-4 skills appropriate for the Class and Background.
       Select 1 relevant Origin Feat (e.g. Alert, Musician, Tough, Lucky) if appropriate for the background/species.
+      Include relevant Tool Proficiencies (like Thieves' Tools, Lute, Smith's Tools) and Languages (Standard and Rare) fitting the background/species.
       Provide a short backstory fitting the background.`,
       config: {
         responseMimeType: "application/json",
@@ -99,6 +110,8 @@ export const generateBackstory = async (char: Character): Promise<string> => {
     Stats: STR ${char.stats.Strength}, DEX ${char.stats.Dexterity}, INT ${char.stats.Intelligence}, ...
     Skills: ${skillList}
     Feats: ${featList}
+    Tools: ${char.toolProficiencies.join(', ')}
+    Languages: ${char.languages.join(', ')}
     
     Focus on their motivation for adventuring. Keep it thematic to the D&D setting.`;
 

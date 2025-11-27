@@ -1,5 +1,6 @@
 
-import React from 'react';
+
+import React, { useState, useMemo } from 'react';
 import { X, Check } from 'lucide-react';
 import { SelectionOption } from '../constants';
 
@@ -7,7 +8,9 @@ interface SelectionModalProps {
   title: string;
   description?: string;
   options: SelectionOption[];
-  selected: string;
+  selected: string; // Or string[] depending on usage, but for single-select modals using string
+  // If we want to support multi-add from this modal in the future, we might change this, 
+  // but for now onSelect just adds one item and closes.
   onSelect: (value: string) => void;
   onClose: () => void;
   icon?: React.ReactNode;
@@ -22,6 +25,19 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
   onClose,
   icon
 }) => {
+  // Check for categories
+  const categories = useMemo(() => {
+    const cats = new Set(options.map(o => o.category).filter(Boolean));
+    return Array.from(cats) as string[];
+  }, [options]);
+
+  const [activeCategory, setActiveCategory] = useState<string | 'All'>('All');
+
+  const filteredOptions = useMemo(() => {
+    if (activeCategory === 'All') return options;
+    return options.filter(o => o.category === activeCategory);
+  }, [options, activeCategory]);
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in">
       <div
@@ -30,26 +46,49 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
       />
       <div className="relative z-10 w-full max-w-5xl max-h-[85vh] bg-dnd-slate border border-dnd-gold/30 rounded-xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-dnd-dark to-dnd-slate">
-          <div>
-            <h2 className="text-2xl font-serif font-bold text-dnd-gold flex items-center gap-2">
-              {icon}
-              {title}
-            </h2>
-            {description && <p className="text-sm text-gray-400 mt-1">{description}</p>}
+        <div className="p-6 border-b border-white/10 flex flex-col gap-4 bg-gradient-to-r from-dnd-dark to-dnd-slate">
+          <div className="flex justify-between items-center">
+             <div>
+                <h2 className="text-2xl font-serif font-bold text-dnd-gold flex items-center gap-2">
+                  {icon}
+                  {title}
+                </h2>
+                {description && <p className="text-sm text-gray-400 mt-1">{description}</p>}
+             </div>
+             <button
+                onClick={onClose}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+             >
+                <X className="w-6 h-6" />
+             </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          
+          {/* Categories Tab */}
+          {categories.length > 0 && (
+             <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                <button
+                  onClick={() => setActiveCategory('All')}
+                  className={`px-3 py-1.5 rounded-full text-xs uppercase font-bold tracking-wider whitespace-nowrap transition-colors ${activeCategory === 'All' ? 'bg-dnd-gold text-dnd-dark' : 'bg-black/40 text-gray-400 hover:bg-white/10'}`}
+                >
+                  All
+                </button>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-3 py-1.5 rounded-full text-xs uppercase font-bold tracking-wider whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-dnd-gold text-dnd-dark' : 'bg-black/40 text-gray-400 hover:bg-white/10'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+             </div>
+          )}
         </div>
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 bg-dnd-dark/50 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {options.map((opt) => {
+            {filteredOptions.map((opt) => {
               const isSelected = selected === opt.name;
               return (
                 <button
@@ -81,6 +120,14 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
                         <p className="text-sm text-gray-400 text-center leading-relaxed group-hover:text-gray-300 transition-colors">
                            {opt.description}
                         </p>
+                        
+                        {opt.category && (
+                           <div className="mt-auto pt-4 text-center">
+                              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider border border-white/10 px-2 py-1 rounded-full bg-black/20">
+                                {opt.category}
+                              </span>
+                           </div>
+                        )}
                     </div>
                 </button>
               );

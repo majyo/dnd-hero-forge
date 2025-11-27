@@ -1,4 +1,5 @@
 
+
 export type Language = 'en' | 'zh';
 
 export const translations: Record<Language, Record<string, string>> = {
@@ -11,7 +12,7 @@ export const translations: Record<Language, Record<string, string>> = {
     aiPlaceholder: "e.g., 'A sneaky Halfling rogue' or 'A paladin struggling with their oath'",
     generate: "Generate",
     generating: "Forging...",
-    aiDisclaimer: "Powered by Google Gemini 2.5 Flash. Generates Stats, Skills, Feats, and Backstory.",
+    aiDisclaimer: "Powered by Google Gemini 2.5 Flash. Generates Stats, Skills, Feats, Tools, Languages, and Backstory.",
     coreIdentity: "Core Identity",
     characterName: "Character Name",
     species: "Species",
@@ -82,8 +83,8 @@ export const translations: Record<Language, Record<string, string>> = {
     suggestName: "Suggest Name",
     selectSpecies: "Select Species",
     selectSpeciesDesc: "Choose your character's species, determining their innate traits and ancestry.",
-    selectClass: "Select Class for Level",
-    selectClassDesc: "Choose the class for this character level.",
+    selectClass: "Select Subclass for Level",
+    selectClassDesc: "Choose the subclass for this character level.",
     selectBackground: "Select Background",
     selectBackgroundDesc: "Your background reveals where you came from and how you became an adventurer.",
     selectAlignment: "Select Alignment",
@@ -96,7 +97,17 @@ export const translations: Record<Language, Record<string, string>> = {
     source: "Source / Attribute",
     type: "Type",
     added: "Added",
-    none: "None"
+    none: "None",
+    toolProficiencies: "Tool Proficiencies",
+    selectTool: "Select Tool",
+    selectToolDesc: "Choose artisan's tools, gaming sets, or musical instruments.",
+    noTools: "No tools selected.",
+    languages: "Languages",
+    selectLanguage: "Select Language",
+    selectLanguageDesc: "Choose languages your character can speak, read, and write.",
+    noLanguages: "No languages selected.",
+    proficiencies: "Proficiencies & Languages",
+    backstoryPlaceholder: "Write your character's backstory here or use the AI Writer to generate one..."
   },
   zh: {
     appTitle: "英雄锻造所",
@@ -107,7 +118,7 @@ export const translations: Record<Language, Record<string, string>> = {
     aiPlaceholder: "例如：'一个喜欢偷窃富人的半身人游荡者' 或 '一个在誓言中挣扎的圣武士'",
     generate: "生成",
     generating: "锻造中...",
-    aiDisclaimer: "由 Google Gemini 2.5 Flash 驱动。自动生成属性、技能、专长和背景故事。",
+    aiDisclaimer: "由 Google Gemini 2.5 Flash 驱动。自动生成属性、技能、专长、工具、语言和背景故事。",
     coreIdentity: "核心身份",
     characterName: "角色姓名",
     species: "种族",
@@ -178,8 +189,8 @@ export const translations: Record<Language, Record<string, string>> = {
     suggestName: "建议名称",
     selectSpecies: "选择种族",
     selectSpeciesDesc: "选择你角色的种族，这决定了他们的天赋特征和血统。",
-    selectClass: "选择职业等级",
-    selectClassDesc: "为当前等级选择职业。",
+    selectClass: "选择子职业",
+    selectClassDesc: "为当前等级选择子职业。",
     selectBackground: "选择背景",
     selectBackgroundDesc: "你的背景揭示了你的来历以及你是如何成为冒险者的。",
     selectAlignment: "选择阵营",
@@ -192,6 +203,16 @@ export const translations: Record<Language, Record<string, string>> = {
     source: "来源 / 属性",
     type: "类型",
     added: "已添加",
-    none: "无"
+    none: "无",
+    toolProficiencies: "工具熟练",
+    selectTool: "选择工具",
+    selectToolDesc: "选择工匠工具、游戏套组或乐器。",
+    noTools: "未选择工具。",
+    languages: "语言",
+    selectLanguage: "选择语言",
+    selectLanguageDesc: "选择你角色能说、读、写的语言。",
+    noLanguages: "未选择语言。",
+    proficiencies: "熟练项与语言",
+    backstoryPlaceholder: "在此撰写你的角色背景故事，或使用 AI 撰写生成..."
   }
 };

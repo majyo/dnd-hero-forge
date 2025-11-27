@@ -2,11 +2,14 @@
 
 
 
+
+
 // D&D 2024 Core Options (Simplified list)
 
 export interface SelectionOption {
   name: string;
   description: string;
+  category?: string;
 }
 
 export const SPECIES_DATA: SelectionOption[] = [
@@ -24,22 +27,48 @@ export const SPECIES_DATA: SelectionOption[] = [
 
 export const SPECIES_LIST = SPECIES_DATA.map(s => s.name);
 
-export const CLASS_DATA: SelectionOption[] = [
-  { name: "Barbarian", description: "A fierce warrior of primitive background who can enter a battle rage." },
-  { name: "Bard", description: "An inspiring magician whose power echoes the music of creation." },
-  { name: "Cleric", description: "A priestly champion who wields divine magic in service of a higher power." },
-  { name: "Druid", description: "A priest of the Old Faith, wielding the powers of nature and adopting animal forms." },
-  { name: "Fighter", description: "A master of martial combat, skilled with a variety of weapons and armor." },
-  { name: "Monk", description: "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection." },
-  { name: "Paladin", description: "A holy warrior bound to a sacred oath." },
-  { name: "Ranger", description: "A warrior who uses martial prowess and nature magic to combat threats on the edges of civilization." },
-  { name: "Rogue", description: "A scoundrel who uses stealth and trickery to overcome obstacles and enemies." },
-  { name: "Sorcerer", description: "A spellcaster who draws on inherent magic from a gift or bloodline." },
-  { name: "Warlock", description: "A practitioner of magic who has derived a pact with an extraplanar entity." },
-  { name: "Wizard", description: "A scholarly magic-user capable of manipulating the structures of reality." }
-];
+export interface SubclassOption extends SelectionOption {
+  className: string;
+}
 
-export const CLASS_LIST = CLASS_DATA.map(c => c.name);
+export const SUBCLASS_DATA: SubclassOption[] = [
+  // Barbarian
+  { name: "Path of the Berserker", className: "Barbarian", category: "Barbarian", description: "A path of untrammeled fury and bloodlust." },
+  { name: "Path of the Wild Heart", className: "Barbarian", category: "Barbarian", description: "A path attuned to the beasts of the wild." },
+  // Bard
+  { name: "College of Lore", className: "Bard", category: "Bard", description: "Bards who collect secrets and knowledge from everywhere." },
+  { name: "College of Valor", className: "Bard", category: "Bard", description: "Bards who sing the deeds of heroes and accompany them in battle." },
+  // Cleric
+  { name: "Life Domain", className: "Cleric", category: "Cleric", description: "Clerics dedicated to healing and sustaining life." },
+  { name: "War Domain", className: "Cleric", category: "Cleric", description: "Clerics who deliver the fury of their god in battle." },
+  // Druid
+  { name: "Circle of the Land", className: "Druid", category: "Druid", description: "Druids who revere the nature of the land they inhabit." },
+  { name: "Circle of the Moon", className: "Druid", category: "Druid", description: "Druids who specialize in transforming into wild beasts." },
+  // Fighter
+  { name: "Champion", className: "Fighter", category: "Fighter", description: "A warrior who focuses on raw physical power." },
+  { name: "Battle Master", className: "Fighter", category: "Fighter", description: "A warrior who views combat as an academic field." },
+  // Monk
+  { name: "Warrior of the Open Hand", className: "Monk", category: "Monk", description: "Monks who master martial arts combat." },
+  { name: "Warrior of Shadow", className: "Monk", category: "Monk", description: "Monks who serve as spies and assassins." },
+  // Paladin
+  { name: "Oath of Devotion", className: "Paladin", category: "Paladin", description: "Paladins who fight for justice, virtue, and order." },
+  { name: "Oath of Vengeance", className: "Paladin", category: "Paladin", description: "Paladins who punish those who have committed grievous sins." },
+  // Ranger
+  { name: "Hunter", className: "Ranger", category: "Ranger", description: "Rangers who master the techniques of hunting monsters." },
+  { name: "Beast Master", className: "Ranger", category: "Ranger", description: "Rangers who bond with a beast companion." },
+  // Rogue
+  { name: "Thief", className: "Rogue", category: "Rogue", description: "Rogues who hone their skills in the larcenous arts." },
+  { name: "Assassin", className: "Rogue", category: "Rogue", description: "Rogues who focus on the grim art of death." },
+  // Sorcerer
+  { name: "Draconic Sorcery", className: "Sorcerer", category: "Sorcerer", description: "Sorcerers with the blood of dragons." },
+  { name: "Wild Magic", className: "Sorcerer", category: "Sorcerer", description: "Sorcerers whose magic comes from the forces of chaos." },
+  // Warlock
+  { name: "Fiend Patron", className: "Warlock", category: "Warlock", description: "Warlocks who serve a fiend from the Lower Planes." },
+  { name: "Archfey Patron", className: "Warlock", category: "Warlock", description: "Warlocks who serve a lord or lady of the Feywild." },
+  // Wizard
+  { name: "School of Evocation", className: "Wizard", category: "Wizard", description: "Wizards who focus on creating powerful elemental effects." },
+  { name: "School of Abjuration", className: "Wizard", category: "Wizard", description: "Wizards who focus on protective magic." }
+];
 
 export const CLASS_HIT_DICE: Record<string, number> = {
   "Barbarian": 12,
@@ -191,4 +220,74 @@ export const EXAMPLE_EQUIPMENT = [
   { name: "Healing Potion", category: "Consumable", description: "Restores 2d4 + 2 hit points.", quantity: 2 },
   { name: "Explorer's Pack", category: "Adventuring Gear", description: "Includes a backpack, a bedroll, a mess kit, a tinderbox, 10 torches, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.", quantity: 1 },
   { name: "Shield", category: "Armor", description: "+2 to Armor Class.", quantity: 1 }
+];
+
+// TOOLS & LANGUAGES
+
+export const TOOL_DATA: SelectionOption[] = [
+  // Artisan's Tools
+  { name: "Alchemist's Supplies", description: "Enables you to produce useful potions and concoctions.", category: "Artisan's Tools" },
+  { name: "Brewer's Supplies", description: "Contains everything needed to brew ale and beer.", category: "Artisan's Tools" },
+  { name: "Calligrapher's Supplies", description: "Ink, parchment, and quills for beautiful writing.", category: "Artisan's Tools" },
+  { name: "Carpenter's Tools", description: "Tools for working with wood.", category: "Artisan's Tools" },
+  { name: "Cartographer's Tools", description: "Used for creating maps.", category: "Artisan's Tools" },
+  { name: "Cobbler's Tools", description: "Used for repairing and making shoes.", category: "Artisan's Tools" },
+  { name: "Cook's Utensils", description: "Essential for preparing meals.", category: "Artisan's Tools" },
+  { name: "Glassblower's Tools", description: "Used for shaping glass.", category: "Artisan's Tools" },
+  { name: "Jeweler's Tools", description: "Used for cutting and setting gems.", category: "Artisan's Tools" },
+  { name: "Leatherworker's Tools", description: "Used for working with leather.", category: "Artisan's Tools" },
+  { name: "Mason's Tools", description: "Used for stone carving and construction.", category: "Artisan's Tools" },
+  { name: "Painter's Supplies", description: "Used for painting portraits and scenery.", category: "Artisan's Tools" },
+  { name: "Potter's Tools", description: "Used for creating ceramic objects.", category: "Artisan's Tools" },
+  { name: "Smith's Tools", description: "Used for forging metal.", category: "Artisan's Tools" },
+  { name: "Tinker's Tools", description: "Used for repairing small metallic objects.", category: "Artisan's Tools" },
+  { name: "Weaver's Tools", description: "Used for making cloth.", category: "Artisan's Tools" },
+  { name: "Woodcarver's Tools", description: "Used for carving wood.", category: "Artisan's Tools" },
+  // Kits
+  { name: "Disguise Kit", description: "Props and makeup for creating disguises.", category: "Kits" },
+  { name: "Forgery Kit", description: "Used to create fake documents.", category: "Kits" },
+  { name: "Herbalism Kit", description: "Used to create remedies and potions from herbs.", category: "Kits" },
+  { name: "Navigator's Tools", description: "Used for navigation at sea.", category: "Kits" },
+  { name: "Poisoner's Kit", description: "Used to create poisons.", category: "Kits" },
+  { name: "Thieves' Tools", description: "Used to pick locks and disarm traps.", category: "Kits" },
+  // Gaming Sets
+  { name: "Dice Set", description: "A set of dice for gambling.", category: "Gaming Sets" },
+  { name: "Dragonchess Set", description: "A strategic board game.", category: "Gaming Sets" },
+  { name: "Playing Card Set", description: "A standard deck of cards.", category: "Gaming Sets" },
+  { name: "Three-Dragon Ante Set", description: "A card game involving dragons.", category: "Gaming Sets" },
+  // Instruments
+  { name: "Bagpipes", description: "A woodwind instrument using enclosed reeds.", category: "Musical Instruments" },
+  { name: "Drum", description: "A percussion instrument.", category: "Musical Instruments" },
+  { name: "Dulcimer", description: "A string instrument struck with hammers.", category: "Musical Instruments" },
+  { name: "Flute", description: "A woodwind instrument.", category: "Musical Instruments" },
+  { name: "Lute", description: "A string instrument with a deep round back.", category: "Musical Instruments" },
+  { name: "Lyre", description: "A U-shaped string instrument.", category: "Musical Instruments" },
+  { name: "Horn", description: "A brass instrument.", category: "Musical Instruments" },
+  { name: "Pan Flute", description: "Multiple pipes of gradually increasing length.", category: "Musical Instruments" },
+  { name: "Shawm", description: "A double-reed woodwind instrument.", category: "Musical Instruments" },
+  { name: "Viol", description: "A bowed string instrument.", category: "Musical Instruments" }
+];
+
+export const LANGUAGE_DATA: SelectionOption[] = [
+  // Standard
+  { name: "Common", description: "Spoken by nearly everyone.", category: "Standard Languages" },
+  { name: "Dwarvish", description: "Spoken by dwarves.", category: "Standard Languages" },
+  { name: "Elvish", description: "Spoken by elves.", category: "Standard Languages" },
+  { name: "Giant", description: "Spoken by giants.", category: "Standard Languages" },
+  { name: "Gnomish", description: "Spoken by gnomes.", category: "Standard Languages" },
+  { name: "Goblin", description: "Spoken by goblinoids.", category: "Standard Languages" },
+  { name: "Halfling", description: "Spoken by halflings.", category: "Standard Languages" },
+  { name: "Orc", description: "Spoken by orcs.", category: "Standard Languages" },
+  // Rare
+  { name: "Abyssal", description: "Spoken by demons.", category: "Rare Languages" },
+  { name: "Celestial", description: "Spoken by celestials.", category: "Rare Languages" },
+  { name: "Draconic", description: "Spoken by dragons.", category: "Rare Languages" },
+  { name: "Deep Speech", description: "Spoken by mind flayers and beholders.", category: "Rare Languages" },
+  { name: "Infernal", description: "Spoken by devils.", category: "Rare Languages" },
+  { name: "Primordial", description: "Spoken by elementals.", category: "Rare Languages" },
+  { name: "Sylvan", description: "Spoken by fey creatures.", category: "Rare Languages" },
+  { name: "Undercommon", description: "Spoken by Underdark traders.", category: "Rare Languages" },
+  // Other
+  { name: "Druidic", description: "Secret language of druids.", category: "Class Languages" },
+  { name: "Thieves' Cant", description: "Secret code of rogues.", category: "Class Languages" }
 ];

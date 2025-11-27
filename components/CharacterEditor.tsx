@@ -1,8 +1,9 @@
 
+
 import React, { useState } from 'react';
-import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Landmark, ChevronRight, Crown, Package, Users, Scale } from 'lucide-react';
+import { Shield, Scroll, Sword, Sparkles, RefreshCw, BookOpen, Circle, Disc, Trophy, Trash2, Plus, Heart, X, Zap, Backpack, Flame, Activity, Landmark, ChevronRight, Crown, Package, Users, Scale, Wrench, Languages } from 'lucide-react';
 import { Ability, Character, ProficiencyLevel, Spell, EquipmentItem } from '../types';
-import { SPECIES_DATA, CLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE, EXAMPLE_EQUIPMENT } from '../constants';
+import { SPECIES_DATA, SUBCLASS_DATA, BACKGROUND_DATA, ALIGNMENT_DATA, SKILL_DATA, CLASS_HIT_DICE, EXAMPLE_EQUIPMENT, TOOL_DATA, LANGUAGE_DATA } from '../constants';
 import { StatBox } from './StatBox';
 import { SelectionModal } from './SelectionModal';
 import { getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
@@ -12,7 +13,7 @@ interface CharacterEditorProps {
   character: Character;
   updateField: (field: keyof Character, value: any) => void;
   updateStat: (ability: Ability, value: number) => void;
-  addClassLevel: (className: string) => void;
+  addClassLevel: (subclassName: string, className: string) => void;
   removeClassLevel: (index: number) => void;
   setSkillLevel: (skillName: string, level: ProficiencyLevel) => void;
   removeFeat: (index: number) => void;
@@ -25,6 +26,10 @@ interface CharacterEditorProps {
   removeSpell: (index: number) => void;
   toggleSpellPrepared: (index: number) => void;
   updateSpellSlot: (level: number, max: number) => void;
+  addToolProficiency: (tool: string) => void;
+  removeToolProficiency: (tool: string) => void;
+  addLanguage: (language: string) => void;
+  removeLanguage: (language: string) => void;
   
   // AI specific props
   aiPrompt: string;
@@ -55,6 +60,10 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   removeSpell,
   toggleSpellPrepared,
   updateSpellSlot,
+  addToolProficiency,
+  removeToolProficiency,
+  addLanguage,
+  removeLanguage,
   aiPrompt,
   setAiPrompt,
   isGenerating,
@@ -71,7 +80,7 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
   
   const [newSpellName, setNewSpellName] = useState('');
   const [newSpellLevel, setNewSpellLevel] = useState(0);
-  const [activeModal, setActiveModal] = useState<'species' | 'class' | 'background' | 'alignment' | null>(null);
+  const [activeModal, setActiveModal] = useState<'species' | 'class' | 'background' | 'alignment' | 'tools' | 'languages' | null>(null);
 
   const hitDie = CLASS_HIT_DICE[character.classHistory[0]?.className] || 8;
 
@@ -230,11 +239,16 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                            {idx + 1}
                          </div>
                          <div>
-                            <h4 className="font-bold text-base text-gray-200">{levelEntry.className}</h4>
+                            <h4 className="font-bold text-base text-gray-200">{levelEntry.subclassName || levelEntry.className}</h4>
                             <div className="flex gap-2">
                                 <span className="text-[10px] text-cyan-400 uppercase border border-cyan-900 bg-cyan-950/30 px-1.5 rounded tracking-wider">
                                     {t('hitDie')}: d{levelEntry.hitDie}
                                 </span>
+                                {levelEntry.subclassName && levelEntry.subclassName !== levelEntry.className && (
+                                   <span className="text-[10px] text-purple-400 uppercase border border-purple-900 bg-purple-950/30 px-1.5 rounded tracking-wider">
+                                       {levelEntry.className}
+                                   </span>
+                                )}
                                 {idx === 0 && <span className="text-[10px] text-orange-400 uppercase border border-orange-900 bg-orange-950/30 px-1.5 rounded tracking-wider">{t('primary')}</span>}
                             </div>
                          </div>
@@ -258,6 +272,57 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
                    </div>
                )}
              </div>
+          </div>
+
+          {/* Tools & Languages Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Tools */}
+              <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
+                      <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
+                          <Wrench className="w-5 h-5" /> {t('toolProficiencies')}
+                      </h3>
+                      <button 
+                          onClick={() => setActiveModal('tools')}
+                          className="bg-dnd-gold/10 text-dnd-gold border border-dnd-gold/30 hover:bg-dnd-gold hover:text-dnd-dark p-1.5 rounded transition-colors"
+                      >
+                          <Plus className="w-4 h-4" />
+                      </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                      {character.toolProficiencies.length === 0 && <span className="text-sm text-gray-500 italic">{t('noTools')}</span>}
+                      {character.toolProficiencies.map(tool => (
+                          <div key={tool} className="flex items-center gap-2 bg-dnd-dark border border-white/10 rounded px-2 py-1 text-sm text-gray-200">
+                              <span>{tool}</span>
+                              <button onClick={() => removeToolProficiency(tool)} className="hover:text-red-400"><X className="w-3 h-3" /></button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              {/* Languages */}
+              <div className="bg-dnd-slate/50 border border-white/5 rounded-xl p-6">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
+                      <h3 className="text-dnd-gold font-serif text-lg flex items-center gap-2">
+                          <Languages className="w-5 h-5" /> {t('languages')}
+                      </h3>
+                      <button 
+                          onClick={() => setActiveModal('languages')}
+                          className="bg-dnd-gold/10 text-dnd-gold border border-dnd-gold/30 hover:bg-dnd-gold hover:text-dnd-dark p-1.5 rounded transition-colors"
+                      >
+                          <Plus className="w-4 h-4" />
+                      </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                      {character.languages.length === 0 && <span className="text-sm text-gray-500 italic">{t('noLanguages')}</span>}
+                      {character.languages.map(lang => (
+                          <div key={lang} className="flex items-center gap-2 bg-dnd-dark border border-white/10 rounded px-2 py-1 text-sm text-gray-200">
+                              <span>{lang}</span>
+                              <button onClick={() => removeLanguage(lang)} className="hover:text-red-400"><X className="w-3 h-3" /></button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
           </div>
 
           {/* Skills Section */}
@@ -748,9 +813,14 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
         <SelectionModal 
            title={t('selectClass')}
            description={t('selectClassDesc')}
-           options={CLASS_DATA}
+           options={SUBCLASS_DATA}
            selected={""} 
-           onSelect={(val) => addClassLevel(val)}
+           onSelect={(val) => {
+              const sub = SUBCLASS_DATA.find(s => s.name === val);
+              if (sub) {
+                  addClassLevel(sub.name, sub.className);
+              }
+           }}
            onClose={() => setActiveModal(null)}
            icon={<Crown className="w-6 h-6" />}
         />
@@ -775,6 +845,28 @@ export const CharacterEditor: React.FC<CharacterEditorProps> = ({
            onSelect={(val) => updateField('alignment', val)}
            onClose={() => setActiveModal(null)}
            icon={<Scale className="w-6 h-6" />}
+        />
+      )}
+      {activeModal === 'tools' && (
+        <SelectionModal 
+           title={t('selectTool')}
+           description={t('selectToolDesc')}
+           options={TOOL_DATA}
+           selected={""}
+           onSelect={(val) => addToolProficiency(val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Wrench className="w-6 h-6" />}
+        />
+      )}
+      {activeModal === 'languages' && (
+        <SelectionModal 
+           title={t('selectLanguage')}
+           description={t('selectLanguageDesc')}
+           options={LANGUAGE_DATA}
+           selected={""}
+           onSelect={(val) => addLanguage(val)}
+           onClose={() => setActiveModal(null)}
+           icon={<Languages className="w-6 h-6" />}
         />
       )}
     </div>

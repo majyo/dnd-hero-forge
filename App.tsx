@@ -1,10 +1,8 @@
 
 
-
-
 import React, { useState } from 'react';
 import { AICharacterSuggestion, ProficiencyLevel } from './types';
-import { SKILL_DATA, CLASS_HIT_DICE } from './constants';
+import { SKILL_DATA, CLASS_HIT_DICE, SUBCLASS_DATA } from './constants';
 import { generateCharacterFromPrompt, generateBackstory, suggestName } from './services/geminiService';
 import { calculateMaxHP, calculateAC, formatClassString } from './utils/characterUtils';
 import { useCharacter } from './hooks/useCharacter';
@@ -32,7 +30,11 @@ const App: React.FC = () => {
     addSpell,
     removeSpell,
     toggleSpellPrepared,
-    updateSpellSlot
+    updateSpellSlot,
+    addToolProficiency,
+    removeToolProficiency,
+    addLanguage,
+    removeLanguage
   } = useCharacter();
 
   const [view, setView] = useState<'edit' | 'sheet'>('edit');
@@ -63,18 +65,36 @@ const App: React.FC = () => {
       }
 
       // Generate Class History based on suggested level
-      // Since AI returns a single class string and a level, we populate the history
+      // Attempt to map AI class name to a subclass or fallback
+      let subclassName = suggestion.class;
+      let className = suggestion.class;
+      
+      // Try to find a subclass match first
+      const subMatch = SUBCLASS_DATA.find(s => s.name.toLowerCase() === suggestion.class.toLowerCase());
+      if (subMatch) {
+          subclassName = subMatch.name;
+          className = subMatch.className;
+      } else {
+          // If not a subclass name, try to find it as a Class Name and pick the first subclass
+          const classMatch = SUBCLASS_DATA.find(s => s.className.toLowerCase() === suggestion.class.toLowerCase());
+          if (classMatch) {
+              subclassName = classMatch.name;
+              className = classMatch.className;
+          }
+      }
+
       const generatedHistory = Array.from({ length: suggestion.level || 1 }).map(() => ({
         id: crypto.randomUUID(),
-        className: suggestion.class,
-        hitDie: CLASS_HIT_DICE[suggestion.class] || 8
+        className: className,
+        subclassName: subclassName,
+        hitDie: CLASS_HIT_DICE[className] || 8
       }));
       
       const classStr = formatClassString(generatedHistory);
 
       // Calculate derived stats
       const hp = calculateMaxHP(generatedHistory, suggestion.stats.Constitution, suggestion.feats || []);
-      const ac = calculateAC(suggestion.class, suggestion.stats.Dexterity, suggestion.stats.Constitution, suggestion.stats.Wisdom);
+      const ac = calculateAC(className, suggestion.stats.Dexterity, suggestion.stats.Constitution, suggestion.stats.Wisdom);
 
       setCharacter(prev => ({
         ...prev,
@@ -86,6 +106,8 @@ const App: React.FC = () => {
         stats: suggestion.stats,
         skills: skillsMap,
         feats: suggestion.feats || [],
+        toolProficiencies: suggestion.toolProficiencies || [],
+        languages: suggestion.languages || ['Common'],
         hitPoints: hp,
         currentHitPoints: hp,
         armorClass: ac,
@@ -99,6 +121,7 @@ const App: React.FC = () => {
         equipment: []
       }));
     } catch (e) {
+      console.error(e);
       alert("Failed to generate character. Please check API configuration.");
     } finally {
       setIsGenerating(false);
@@ -145,6 +168,10 @@ const App: React.FC = () => {
             removeSpell={removeSpell}
             toggleSpellPrepared={toggleSpellPrepared}
             updateSpellSlot={updateSpellSlot}
+            addToolProficiency={addToolProficiency}
+            removeToolProficiency={removeToolProficiency}
+            addLanguage={addLanguage}
+            removeLanguage={removeLanguage}
             aiPrompt={aiPrompt}
             setAiPrompt={setAiPrompt}
             isGenerating={isGenerating}

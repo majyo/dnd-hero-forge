@@ -1,6 +1,7 @@
 
+
 import React from 'react';
-import { Download, Flame, Shield, Activity, Heart } from 'lucide-react';
+import { Download, Flame, Shield, Activity, Heart, Wrench, Languages } from 'lucide-react';
 import { Character, Ability } from '../types';
 import { SKILL_DATA, CLASS_HIT_DICE } from '../constants';
 import { getModifier, getProficiencyBonus, calculateSkillBonus, calculateSpellSaveDC, calculateSpellAttackBonus } from '../utils/characterUtils';
@@ -87,6 +88,29 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = ({ character }) => 
                         </div>
                       )
                    })}
+                 </div>
+              </div>
+              
+              {/* Other Proficiencies */}
+              <div>
+                 <h3 className="font-serif font-bold text-dnd-red uppercase border-b border-gray-300 pb-1 mb-2">{t('proficiencies')}</h3>
+                 <div className="space-y-4">
+                    <div>
+                        <div className="flex items-center gap-1 mb-1 text-xs font-bold text-gray-500 uppercase">
+                            <Wrench className="w-3 h-3" /> {t('toolProficiencies')}
+                        </div>
+                        <div className="text-sm text-gray-800 leading-snug">
+                            {character.toolProficiencies.length > 0 ? character.toolProficiencies.join(', ') : <span className="text-gray-400 italic">None</span>}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-1 mb-1 text-xs font-bold text-gray-500 uppercase">
+                            <Languages className="w-3 h-3" /> {t('languages')}
+                        </div>
+                        <div className="text-sm text-gray-800 leading-snug">
+                            {character.languages.length > 0 ? character.languages.join(', ') : <span className="text-gray-400 italic">Common</span>}
+                        </div>
+                    </div>
                  </div>
               </div>
            </div>

@@ -47,6 +47,7 @@ export interface EquipmentItem {
 export interface ClassLevelEntry {
   id: string;
   className: string;
+  subclassName: string;
   hitDie: number;
 }
 
@@ -69,7 +70,9 @@ export interface Character {
   backstory: string;
   appearance: string;
   equipment: EquipmentItem[];
-  proficiencies: string[];
+  proficiencies: string[]; // General proficiencies string (legacy/unused mostly now)
+  toolProficiencies: string[]; // New: Tools & Instruments
+  languages: string[]; // New: Languages
   spellcastingAbility: string;
   spellSlots: number[];
   spells: Spell[];
@@ -78,9 +81,9 @@ export interface Character {
 export const INITIAL_CHARACTER: Character = {
   name: '',
   species: 'Human',
-  class: 'Fighter 1',
+  class: 'Champion 1',
   classHistory: [
-    { id: 'init_1', className: 'Fighter', hitDie: 10 }
+    { id: 'init_1', className: 'Fighter', subclassName: 'Champion', hitDie: 10 }
   ],
   level: 1,
   background: 'Guard',
@@ -103,6 +106,8 @@ export const INITIAL_CHARACTER: Character = {
   appearance: '',
   equipment: [],
   proficiencies: [],
+  toolProficiencies: [],
+  languages: ['Common'],
   spellcastingAbility: 'None',
   spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
   spells: []
@@ -117,6 +122,8 @@ export interface AICharacterSuggestion {
   stats: AbilityScores;
   skills: string[]; // AI still returns simple list, we convert to proficient level
   feats?: Feat[];
+  toolProficiencies?: string[];
+  languages?: string[];
   shortBackstory: string;
   reasoning: string;
 }

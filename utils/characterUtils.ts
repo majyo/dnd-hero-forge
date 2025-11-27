@@ -87,7 +87,9 @@ export const formatClassString = (history: ClassLevelEntry[]): string => {
   const counts: Record<string, number> = {};
   
   history.forEach(h => {
-    counts[h.className] = (counts[h.className] || 0) + 1;
+    // Group by subclass if available, otherwise fallback to class name
+    const name = h.subclassName || h.className;
+    counts[name] = (counts[name] || 0) + 1;
   });
 
   // Sort by count descending, then name
